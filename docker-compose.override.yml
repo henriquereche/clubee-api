@@ -14,8 +14,15 @@ services:
       - storage__Address=clubee-storage
       - Storage__Port=10000
       - Storage__Protocol=http
+
+      - MongoSettings__Connection=mongodb://clubee-database
+      - MongoSettings__Database=clubee
+
     ports:
       - "52356:80"
+    depends_on:
+      - clubee-storage
+      - clubee-database
     volumes:
       - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
       - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
@@ -24,3 +31,8 @@ services:
     image: arafato/azurite
     ports: 
       - "10000:10000"
+
+  clubee-database:
+    image: mongo
+    ports:
+      - "27017:27017"

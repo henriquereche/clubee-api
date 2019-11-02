@@ -1,5 +1,7 @@
-﻿using Clubee.API.Contracts.Infrastructure.Storage;
+﻿using Clubee.API.Contracts.Infrastructure.Data;
+using Clubee.API.Contracts.Infrastructure.Storage;
 using Clubee.API.Infrastructure.Authorization;
+using Clubee.API.Infrastructure.Data;
 using Clubee.API.Infrastructure.Storage;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -42,6 +44,9 @@ namespace Clubee.API
 
             services.AddSingleton<StorageSettings>();
             services.AddScoped<IObjectStorageProvider, ObjectStorageProvider>();
+
+            services.AddScoped<IMongoConnection, MongoConnection>();
+            services.AddScoped<IMongoRepository, MongoRepository>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
