@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Configuration;
+using System;
 
 namespace Clubee.API.Contracts.Extensions
 {
@@ -18,10 +19,15 @@ namespace Clubee.API.Contracts.Extensions
 
             try
             {
-                value = configuration.GetValue<T>(key);
-                return true;
+                if (configuration[key] != null)
+                {
+                    value = (T)Convert.ChangeType(configuration[key], typeof(T));
+                    return true;
+                }
+
+                return false;
             }
-            catch (System.Exception)
+            catch (Exception)
             {
                 return false;
             }
