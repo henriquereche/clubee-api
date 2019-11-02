@@ -1,0 +1,8 @@
+version: '3.4'
+
+services:
+  clubee.api:
+    image: ${DOCKER_REGISTRY-}clubeeapi
+    build:
+      context: .
+      dockerfile: Clubee.API/Dockerfile
