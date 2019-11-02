@@ -1,14 +1,26 @@
 version: '3.4'
 
 services:
-  clubee.api:
+  clubee-api:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
-      - ASPNETCORE_URLS=https://+:443;http://+:80
-      - ASPNETCORE_HTTPS_PORT=44316
+      - ASPNETCORE_URLS=http://+:80
+
+      - JwtSettings__SecretKey=8BaypBYxaxT7DptQrxcR993AVG9f8Fz5msVqQUAKkGZ3EpxXvwpv8czak4XQ
+      - JwtSettings__ExpirationSeconds=172800
+
+      - Storage__Account=devstoreaccount1
+      - Storage__Key=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==
+      - storage__Address=clubee-storage
+      - Storage__Port=10000
+      - Storage__Protocol=http
     ports:
       - "52356:80"
-      - "44316:443"
     volumes:
       - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
       - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
+
+  clubee-storage:
+    image: arafato/azurite
+    ports: 
+      - "10000:10000"

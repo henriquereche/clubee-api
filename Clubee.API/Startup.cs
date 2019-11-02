@@ -1,4 +1,6 @@
-﻿using Clubee.API.Infrastructure.Authorization;
+﻿using Clubee.API.Contracts.Infrastructure.Storage;
+using Clubee.API.Infrastructure.Authorization;
+using Clubee.API.Infrastructure.Storage;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
@@ -37,6 +39,9 @@ namespace Clubee.API
             {
                 config.SwaggerDoc("v1", new Info { Title = "Clubee API", Version = "v1" });
             });
+
+            services.AddSingleton<StorageSettings>();
+            services.AddScoped<IObjectStorageProvider, ObjectStorageProvider>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

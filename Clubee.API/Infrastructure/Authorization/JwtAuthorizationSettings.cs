@@ -15,8 +15,7 @@ namespace Clubee.API.Infrastructure.Authorization
             IConfigurationSection jwtAuthorizationSection = configuration.GetSection("JwtSettings");
 
             this.SecretKey = jwtAuthorizationSection.TryGetValue<string>("SecretKey", out string secretKey)
-                ? secretKey
-                : throw new MissingEnvironmentVariableException("JwtSettings.SecretKey");
+                ? secretKey : throw new MissingEnvironmentVariableException("JwtSettings.SecretKey");
 
             this.Expiration = jwtAuthorizationSection.TryGetValue<int>("ExpirationSeconds", out int expirationSeconds)
                 ? TimeSpan.FromSeconds(expirationSeconds)
