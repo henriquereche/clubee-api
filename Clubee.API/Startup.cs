@@ -1,5 +1,6 @@
 ﻿using Clubee.API.Infrastructure.Authorization;
 using Clubee.API.Infrastructure.DI;
+using Clubee.API.Infrastructure.Middlewares;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
@@ -62,6 +63,9 @@ namespace Clubee.API
             {
                 config.SwaggerEndpoint("/swagger/v1/swagger.json", "Clubee API V1");
             });
+
+            // Register middleware for exception handling.
+            app.UseMiddleware<ApplicationExceptionHandlerMiddleware>();
 
             app.UseHttpsRedirection();
             app.UseMvc();
