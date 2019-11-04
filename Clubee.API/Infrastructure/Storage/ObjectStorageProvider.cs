@@ -49,10 +49,12 @@ namespace Clubee.API.Infrastructure.Storage
         /// <param name="objectName"></param>
         /// <param name="buffer"></param>
         /// <returns></returns>
-        public async Task SetObject(string container, string objectName, byte[] buffer)
+        public async Task<string> SetObject(string container, string objectName, byte[] buffer)
         {
             CloudBlockBlob blobObject = await this.GetObject(container, objectName);
             await blobObject.UploadFromByteArrayAsync(buffer, 0, buffer.Length);
+
+            return $"{this.StorageSettings.Endpoint}/{container}/{objectName}";
         }
 
         /// <summary>

@@ -11,7 +11,7 @@ namespace Clubee.API.Contracts.Infrastructure.Storage
         /// <param name="objectName"></param>
         /// <param name="buffer"></param>
         /// <returns></returns>
-        Task SetObject(string container, string objectName, byte[] buffer);
+        Task<string> SetObject(string container, string objectName, byte[] buffer);
 
         /// <summary>
         /// Delete existing object.

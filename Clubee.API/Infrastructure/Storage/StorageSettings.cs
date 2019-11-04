@@ -55,6 +55,11 @@ namespace Clubee.API.Infrastructure.Storage
         public string Protocol { get; private set; }
 
         /// <summary>
+        /// Storage endpoint.
+        /// </summary>
+        public string Endpoint => $"{this.Protocol}://{this.Address}:{this.Port}/{this.Account}";
+
+        /// <summary>
         /// Get storage connection string.
         /// </summary>
         /// <returns></returns>
@@ -63,7 +68,7 @@ namespace Clubee.API.Infrastructure.Storage
             return $"DefaultEndpointsProtocol={this.Protocol};"
                 + $"AccountName={this.Account};"
                 + $"AccountKey={this.Key};"
-                + $"BlobEndpoint={this.Protocol}://{this.Address}:{this.Port}/{this.Account};";
+                + $"BlobEndpoint={this.Endpoint};";
         }
     }
 }
