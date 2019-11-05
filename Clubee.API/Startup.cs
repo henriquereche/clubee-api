@@ -37,6 +37,7 @@ namespace Clubee.API
             // Swagger document gereneration options.
             services.AddSwaggerGen(config =>
             {
+                config.EnableAnnotations();
                 config.SwaggerDoc("v1", new Info { Title = "Clubee API", Version = "v1" });
             });
 
