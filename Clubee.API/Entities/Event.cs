@@ -1,7 +1,9 @@
 ﻿using Clubee.API.Contracts.Entities;
+using Clubee.API.Contracts.Enums;
 using Clubee.API.Contracts.Exceptions;
 using Clubee.API.Contracts.Extensions;
 using MongoDB.Bson;
+using MongoDB.Driver.GeoJsonObjectModel;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,55 +14,49 @@ namespace Clubee.API.Entities
     {
         protected Event()
         {
-            this.Tags = new List<Tag>();
+            this.Genres = new List<GenreEnum>();
         }
 
         public Event(
-            ObjectId businessId,
+            ObjectId establishmentId,
             DateTime startDate,
             DateTime endDate,
             string name,
             string description,
             string image,
-            IEnumerable<Tag> tags)
+            GeoJson2DGeographicCoordinates location,
+            IEnumerable<GenreEnum> genres
+            ) : this()
         {
-            this.BusinessId = businessId;
+            this.EstablishmentId = establishmentId;
             this.Name = name;
             this.Description = description;
             this.Image = image;
+            this.Location = location;
 
             this.SetDate(
                 startDate,
                 endDate
             );
 
-            if (!tags.IsNullOrEmpty()) foreach (Tag tag in tags)
-                this.AddTag(tag);
+            if (!genres.IsNullOrEmpty()) foreach (GenreEnum genre in genres)
+                this.AddGenre(genre);
         }
 
         public ObjectId Id { get; protected set; }
-        public ObjectId BusinessId { get; protected set; }
+        public ObjectId EstablishmentId { get; protected set; }
         public DateTime StartDate { get; protected set; }
         public DateTime EndDate { get; protected set; }
         public string Name { get; set; }
         public string Description { get; set; }
         public string Image { get; set; }
-        public ICollection<Tag> Tags { get; protected set; }
+        public GeoJson2DGeographicCoordinates Location { get; set; }
+        public ICollection<GenreEnum> Genres { get; protected set; }
 
         /// <summary>
         /// Represent total event duration.
         /// </summary>
         public TimeSpan Duration => this.EndDate - this.StartDate;
-
-        /// <summary>
-        /// Add a new tag to event.
-        /// </summary>
-        /// <param name="tag"></param>
-        public void AddTag(Tag tag)
-        {
-            if (!this.Tags.Any(x => x.Name == tag.Name))
-                this.Tags.Add(tag);
-        }
 
         /// <summary>
         /// Set event begin and end date.
@@ -79,6 +75,16 @@ namespace Clubee.API.Entities
 
             this.StartDate = startDate;
             this.EndDate = endDate;
+        }
+
+        /// <summary>
+        /// Add new genre to event.
+        /// </summary>
+        /// <param name="genre"></param>
+        public void AddGenre(GenreEnum genre)
+        {
+            if (this.Genres.Any(x => x == genre))
+                this.Genres.Add(genre);
         }
     }
 }
