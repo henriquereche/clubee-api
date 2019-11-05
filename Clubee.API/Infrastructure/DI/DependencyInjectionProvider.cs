@@ -1,7 +1,9 @@
 ﻿using Clubee.API.Contracts.Infrastructure.Data;
 using Clubee.API.Contracts.Infrastructure.Storage;
+using Clubee.API.Contracts.Services;
 using Clubee.API.Infrastructure.Data;
 using Clubee.API.Infrastructure.Storage;
+using Clubee.API.Services;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Clubee.API.Infrastructure.DI
@@ -19,6 +21,10 @@ namespace Clubee.API.Infrastructure.DI
 
             services.AddScoped<IMongoConnection, MongoConnection>();
             services.AddScoped<IMongoRepository, MongoRepository>();
+
+            services.AddScoped<IImageService, ImageService>();
+            services.AddScoped<ILoginService, LoginService>();
+            services.AddScoped<IRegisterService, RegisterService>();
         }
     }
 }

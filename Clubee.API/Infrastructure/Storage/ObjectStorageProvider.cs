@@ -1,6 +1,7 @@
 ﻿using Clubee.API.Contracts.Infrastructure.Storage;
 using Microsoft.Azure.Storage;
 using Microsoft.Azure.Storage.Blob;
+using System;
 using System.Threading.Tasks;
 
 namespace Clubee.API.Infrastructure.Storage

@@ -7,14 +7,12 @@ namespace Clubee.API.Entities
     {
         public User(
             ObjectId businessId, 
-            string name, 
             string email, 
             string password, 
             string salt
             )
         {
             this.BusinessId = businessId;
-            this.Name = name;
             this.Email = email;
 
             this.SetPassword(password, salt);
@@ -22,7 +20,6 @@ namespace Clubee.API.Entities
 
         public ObjectId Id { get; protected set; }
         public ObjectId BusinessId { get; protected set; }
-        public string Name { get; set; }
         public string Email { get; protected set; }
         public string Password { get; protected set; }
         public string Salt { get; protected set; }

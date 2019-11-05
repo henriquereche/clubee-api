@@ -5,6 +5,8 @@ using Clubee.API.Models.Base;
 using Clubee.API.Models.User;
 using System.Collections.Generic;
 using System.Security.Claims;
+using System.Security.Cryptography;
+using System.Text;
 
 namespace Clubee.API.Services
 {
@@ -32,6 +34,28 @@ namespace Clubee.API.Services
                 Token = token.Token,
                 Expiration = token.Expiration
             };
+        }
+
+        /// <summary>
+        /// Generate hash from password and salt.
+        /// </summary>
+        /// <param name="password"></param>
+        /// <param name="salt"></param>
+        /// <returns></returns>
+        public string GeneratePasswordHash(string password, string salt)
+        {
+            byte[] bytes = Encoding.UTF8.GetBytes(password + salt);
+
+            using (SHA512 sha = SHA512.Create())
+            {
+                byte[] computedHash = sha.ComputeHash(bytes);
+                StringBuilder computedString = new StringBuilder();
+
+                foreach (var computedByte in computedHash)
+                    computedString.Append(computedByte.ToString("X2"));
+
+                return computedString.ToString();
+            }
         }
 
         /// <summary>

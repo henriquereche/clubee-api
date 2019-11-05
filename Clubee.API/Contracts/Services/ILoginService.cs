@@ -11,5 +11,13 @@ namespace Clubee.API.Contracts.Services
         /// <param name="user"></param>
         /// <returns></returns>
         UserLoginResultDTO Login(User user);
+
+        /// <summary>
+        /// Generate hash from password and salt.
+        /// </summary>
+        /// <param name="password"></param>
+        /// <param name="salt"></param>
+        /// <returns></returns>
+        string GeneratePasswordHash(string password, string salt);
     }
 }

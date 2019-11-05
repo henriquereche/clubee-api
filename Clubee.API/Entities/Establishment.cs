@@ -21,6 +21,7 @@ namespace Clubee.API.Entities
         public Establishment(
             string name, 
             string image, 
+            string imageThumbnail, 
             string description, 
             GeoJson2DGeographicCoordinates location,
             IEnumerable<EstablishmentTypeEnum> establishmentTypes,
@@ -29,6 +30,7 @@ namespace Clubee.API.Entities
         {
             this.Name = name;
             this.Image = image;
+            this.ImageThumbnail = imageThumbnail;
             this.Description = description;
             this.Location = location 
                 ?? throw new ApplicationValidationException("Establishment location should be specifyed.");
@@ -49,6 +51,7 @@ namespace Clubee.API.Entities
         public ObjectId Id { get; protected set; }
         public string Name { get; set; }
         public string Image { get; set; }
+        public string ImageThumbnail { get; set; }
         public string Description { get; set; }
         public GeoJson2DGeographicCoordinates Location { get; set; }
         public ICollection<EstablishmentTypeEnum> EstablishmentTypes { get; protected set; }

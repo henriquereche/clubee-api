@@ -1,0 +1,13 @@
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace Clubee.API.Models.User
+{
+    public class RegisterUserDTO
+    {
+        [Required, EmailAddress]
+        public string Email { get; set; }
+
+        [Required, MinLength(6)]
+        public string Password { get; set; }
+    }
+}
