@@ -73,6 +73,15 @@ namespace Clubee.API
             // Register middleware for exception handling.
             app.UseMiddleware<ApplicationExceptionHandlerMiddleware>();
 
+            // Register CORS settings.
+            app.UseCors(options =>
+            {
+                options.AllowAnyOrigin();
+                options.AllowAnyMethod();
+                options.AllowAnyHeader();
+                options.AllowCredentials();
+            });
+
             app.UseHttpsRedirection();
             app.UseMvc();
         }
