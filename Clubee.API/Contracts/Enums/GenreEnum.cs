@@ -5,7 +5,7 @@ namespace Clubee.API.Contracts.Enums
     public enum GenreEnum
     {
         [Description("Rock")]
-        Rock,
+        Rock = 1,
         
         [Description("Sertanejo")]
         Sertanejo,

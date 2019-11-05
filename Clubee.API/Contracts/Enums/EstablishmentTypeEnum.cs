@@ -5,7 +5,7 @@ namespace Clubee.API.Contracts.Enums
     public enum EstablishmentTypeEnum
     {
         [Description("Bar")]
-        Bar,
+        Bar = 1,
 
         [Description("Pub")]
         Pub,
