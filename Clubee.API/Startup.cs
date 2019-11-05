@@ -42,6 +42,9 @@ namespace Clubee.API
 
             // Register application services.
             services.RegisterApplicationServices();
+
+            // Enble reponse compression services.
+            services.AddResponseCompression();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -63,6 +66,9 @@ namespace Clubee.API
             {
                 config.SwaggerEndpoint("/swagger/v1/swagger.json", "Clubee API V1");
             });
+
+            // Enable response compression middleware.
+            app.UseResponseCompression();
 
             // Register middleware for exception handling.
             app.UseMiddleware<ApplicationExceptionHandlerMiddleware>();
