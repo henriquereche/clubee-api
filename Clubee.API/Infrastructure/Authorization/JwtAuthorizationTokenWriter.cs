@@ -1,4 +1,5 @@
-﻿using Microsoft.IdentityModel.Tokens;
+﻿using Clubee.API.Models.Base;
+using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
@@ -21,15 +22,16 @@ namespace Clubee.API.Infrastructure.Authorization
         /// </summary>
         /// <param name="claims"></param>
         /// <returns></returns>
-        public string WriteToken(IEnumerable<Claim> claims)
+        public JwtAuthorizationTokenModel WriteToken(IEnumerable<Claim> claims)
         {
+            DateTime expiration = DateTime.UtcNow.Add(this.JwtAuthorizationSettings.Expiration);
             byte[] key = Encoding.ASCII.GetBytes(this.JwtAuthorizationSettings.SecretKey);
             JwtSecurityTokenHandler tokenHandler = new JwtSecurityTokenHandler();
 
             SecurityTokenDescriptor tokenDescriptor = new SecurityTokenDescriptor
             {
                 Subject = new ClaimsIdentity(claims),
-                Expires = DateTime.UtcNow.Add(this.JwtAuthorizationSettings.Expiration),
+                Expires = expiration,
                 SigningCredentials = new SigningCredentials(
                     new SymmetricSecurityKey(key),
                     SecurityAlgorithms.HmacSha256Signature
@@ -37,7 +39,11 @@ namespace Clubee.API.Infrastructure.Authorization
             };
 
             SecurityToken token = tokenHandler.CreateToken(tokenDescriptor);
-            return tokenHandler.WriteToken(token);
+
+            return new JwtAuthorizationTokenModel(
+                tokenHandler.WriteToken(token), 
+                expiration
+            );
         }
     }
 }
