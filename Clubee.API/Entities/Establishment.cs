@@ -64,8 +64,10 @@ namespace Clubee.API.Entities
         public void AddAvailability(Availability availability)
         {
             if (this.Availabilities.Any(x =>
-                (x.CloseTime <= availability.OpenTime && x.DayOfWeek == availability.DayOfWeek)
-                || ((x.OpenTime + x.Duration) >= TimeSpan.FromHours(24) && ((int)x.DayOfWeek % 7) + 1 == (int)availability.DayOfWeek % 7)
+                (x.CloseTime >= availability.OpenTime && x.DayOfWeek == availability.DayOfWeek)
+                || ((x.OpenTime + x.Duration) > TimeSpan.FromHours(24) 
+                    && ((int)x.DayOfWeek + 1) % 7 == (int)availability.DayOfWeek
+                    && x.CloseTime >= availability.OpenTime)
             ))
                 throw new ApplicationValidationException(
                     $"Availability {availability.DayOfWeek} {availability.OpenTime} matches existing availability.");

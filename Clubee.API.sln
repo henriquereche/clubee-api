@@ -7,6 +7,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Clubee.API", "Clubee.API\Cl
 EndProject
 Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-compose.dcproj", "{CBC1422B-E306-4DCF-A4F4-7917942BD71C}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Clubee.API.Tests", "Clubee.API.Tests\Clubee.API.Tests.csproj", "{A690E726-D094-4CF9-AF51-82DF6C05EA3C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{CBC1422B-E306-4DCF-A4F4-7917942BD71C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CBC1422B-E306-4DCF-A4F4-7917942BD71C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CBC1422B-E306-4DCF-A4F4-7917942BD71C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A690E726-D094-4CF9-AF51-82DF6C05EA3C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A690E726-D094-4CF9-AF51-82DF6C05EA3C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A690E726-D094-4CF9-AF51-82DF6C05EA3C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A690E726-D094-4CF9-AF51-82DF6C05EA3C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
