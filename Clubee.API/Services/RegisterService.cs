@@ -19,19 +19,16 @@ namespace Clubee.API.Services
         public const string EstablishmentContainer = "establishments";
 
         private readonly IMongoRepository MongoRepository;
-        private readonly IObjectStorageProvider ObjectStorageProvider;
         private readonly IImageService ImageService;
         private readonly ILoginService LoginService;
 
         public RegisterService(
             IMongoRepository mongoRepository,
-            IObjectStorageProvider objectStorageProvider,
             IImageService imageService,
             ILoginService loginService
             )
         {
             this.MongoRepository = mongoRepository;
-            this.ObjectStorageProvider = objectStorageProvider;
             this.ImageService = imageService;
             this.LoginService = loginService;
         }
@@ -45,24 +42,13 @@ namespace Clubee.API.Services
         {
             dto.User.Email = dto.User.Email.ToLower();
 
-            CompressedImageModel compressedImage = this.ImageService.CompressFromBase64(dto.Image);
-
             if (this.MongoRepository.Exists<User>(x => x.Email == dto.User.Email))
                 throw new BadRequestException($"Email {dto.User.Email} already in use.");
 
-            string imageUrl = await this.ObjectStorageProvider.SetObject(
-                RegisterService.EstablishmentContainer,
-                $"{this.GetRandomGuidStringValue()}.{compressedImage.Format}",
-                compressedImage.Buffer
-            );
-
-            string thumbnailUrl = await this.ObjectStorageProvider.SetObject(
-                RegisterService.EstablishmentContainer,
-                $"{this.GetRandomGuidStringValue()}.{compressedImage.Format}",
-                compressedImage.ThumbnailBuffer
-            );
-
-            Establishment establishment = this.CreateEstablishment(imageUrl, thumbnailUrl, dto);
+            UploadImageModel uploadedImage = await this.ImageService.UploadImage(
+                RegisterService.EstablishmentContainer, dto.Image);
+            
+            Establishment establishment = this.CreateEstablishment(uploadedImage.ImageUrl, uploadedImage.ThumbnailUrl, dto);
             this.MongoRepository.Insert(establishment);
 
             User user = this.CreateUser(establishment.Id, dto.User);
@@ -108,7 +94,7 @@ namespace Clubee.API.Services
         /// <returns></returns>
         private User CreateUser(ObjectId establishmentId, RegisterUserDTO dto)
         {
-            string salt = this.GetRandomGuidStringValue();
+            string salt = Guid.NewGuid().ToString();
             string password = this.LoginService.GeneratePasswordHash(dto.Password, salt);
 
             return new User(
@@ -118,12 +104,5 @@ namespace Clubee.API.Services
                 salt
             );
         }
-
-        /// <summary>
-        /// Generates new guid value.
-        /// </summary>
-        /// <returns></returns>
-        private string GetRandomGuidStringValue() 
-            => Guid.NewGuid().ToString();
     }
 }

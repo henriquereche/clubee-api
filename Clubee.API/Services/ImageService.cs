@@ -1,7 +1,10 @@
-﻿using Clubee.API.Contracts.Services;
+﻿using Clubee.API.Contracts.Infrastructure.Storage;
+using Clubee.API.Contracts.Services;
 using Clubee.API.Models.Base;
 using ImageMagick;
+using System;
 using System.IO;
+using System.Threading.Tasks;
 
 namespace Clubee.API.Services
 {
@@ -11,10 +14,12 @@ namespace Clubee.API.Services
         public const int ThumbnailAspectSize = 150;
 
         private readonly ImageOptimizer ImageOptimizer;
+        private readonly IObjectStorageProvider ObjectStorageProvider;
 
-        public ImageService()
+        public ImageService(IObjectStorageProvider objectStorageProvider)
         {
             this.ImageOptimizer = new ImageOptimizer();
+            this.ObjectStorageProvider = objectStorageProvider;
         }
 
         /// <summary>
@@ -47,5 +52,37 @@ namespace Clubee.API.Services
                 ImageService.ImageFormat
             );
         }
+
+        /// <summary>
+        /// Upload image to object storage.
+        /// </summary>
+        /// <param name="container"></param>
+        /// <param name="base64Image"></param>
+        /// <returns></returns>
+        public async Task<UploadImageModel> UploadImage(string container, string base64Image)
+        {
+            CompressedImageModel compressedImage = this.CompressFromBase64(base64Image);
+
+            string imageUrl = await this.ObjectStorageProvider.SetObject(
+                container,
+                $"{this.GetRandomGuidStringValue()}.{compressedImage.Format}",
+                compressedImage.Buffer
+            );
+
+            string thumbnailUrl = await this.ObjectStorageProvider.SetObject(
+                container,
+                $"{this.GetRandomGuidStringValue()}.{compressedImage.Format}",
+                compressedImage.ThumbnailBuffer
+            );
+
+            return new UploadImageModel(imageUrl, thumbnailUrl);
+        }
+
+        /// <summary>
+        /// Generates new guid value.
+        /// </summary>
+        /// <returns></returns>
+        private string GetRandomGuidStringValue()
+            => Guid.NewGuid().ToString();
     }
 }
