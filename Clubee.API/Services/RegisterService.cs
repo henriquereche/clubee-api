@@ -1,4 +1,5 @@
-﻿using Clubee.API.Contracts.Infrastructure.Data;
+﻿using Clubee.API.Contracts.Exceptions;
+using Clubee.API.Contracts.Infrastructure.Data;
 using Clubee.API.Contracts.Infrastructure.Storage;
 using Clubee.API.Contracts.Services;
 using Clubee.API.Entities;
@@ -42,7 +43,12 @@ namespace Clubee.API.Services
         /// <returns></returns>
         public async Task<UserLoginResultDTO> Register(RegisterEstablishmentDTO dto)
         {
+            dto.User.Email = dto.User.Email.ToLower();
+
             CompressedImageModel compressedImage = this.ImageService.CompressFromBase64(dto.Image);
+
+            if (this.MongoRepository.Exists<User>(x => x.Email == dto.User.Email))
+                throw new BadRequestException($"Email {dto.User.Email} already in use.");
 
             string imageUrl = await this.ObjectStorageProvider.SetObject(
                 RegisterService.EstablishmentContainer,

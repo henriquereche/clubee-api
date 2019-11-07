@@ -53,12 +53,21 @@ namespace Clubee.API.Contracts.Infrastructure.Data
            where TEntity : class, IMongoEntity;
 
         /// <summary>
-        /// Query and filte.
+        /// Query and filter.
         /// </summary>
         /// <typeparam name="TEntity"></typeparam>
         /// <param name="filter"></param>
         /// <returns></returns>
         IEnumerable<TEntity> Find<TEntity>(Expression<Func<TEntity, bool>> filter)
+            where TEntity : class, IMongoEntity;
+
+        /// <summary>
+        /// Query and filter to search existing documents matching filter.
+        /// </summary>
+        /// <typeparam name="TEntity"></typeparam>
+        /// <param name="filter"></param>
+        /// <returns></returns>
+        bool Exists<TEntity>(Expression<Func<TEntity, bool>> filter)
             where TEntity : class, IMongoEntity;
 
         /// <summary>

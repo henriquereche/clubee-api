@@ -13,6 +13,13 @@ namespace Clubee.API.Contracts.Services
         UserLoginResultDTO Login(User user);
 
         /// <summary>
+        /// Generate access token for the specified user.
+        /// </summary>
+        /// <param name="dto"></param>
+        /// <returns></returns>
+        UserLoginResultDTO Login(UserLoginDTO dto);
+
+        /// <summary>
         /// Generate hash from password and salt.
         /// </summary>
         /// <param name="password"></param>

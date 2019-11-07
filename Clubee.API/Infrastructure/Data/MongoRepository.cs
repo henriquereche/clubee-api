@@ -105,6 +105,19 @@ namespace Clubee.API.Infrastructure.Data
         }
 
         /// <summary>
+        /// Query and filter to search existing documents matching filter.
+        /// </summary>
+        /// <typeparam name="TEntity"></typeparam>
+        /// <param name="filter"></param>
+        /// <returns></returns>
+        public bool Exists<TEntity>(Expression<Func<TEntity, bool>> filter)
+            where TEntity : class, IMongoEntity
+        {
+            return this.GetCollection<TEntity>()
+                .Find(filter).Any();
+        }
+
+        /// <summary>
         /// Query and filter.
         /// </summary>
         /// <typeparam name="TEntity"></typeparam>

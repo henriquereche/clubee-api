@@ -2,6 +2,9 @@ version: '3.4'
 
 services:
   clubee-api:
+    build:
+      context: .
+      dockerfile: Clubee.API/Dockerfile
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://+:80

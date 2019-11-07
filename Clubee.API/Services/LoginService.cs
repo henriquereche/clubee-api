@@ -1,9 +1,12 @@
-﻿using Clubee.API.Contracts.Services;
+﻿using Clubee.API.Contracts.Exceptions;
+using Clubee.API.Contracts.Infrastructure.Data;
+using Clubee.API.Contracts.Services;
 using Clubee.API.Entities;
 using Clubee.API.Infrastructure.Authorization;
 using Clubee.API.Models.Base;
 using Clubee.API.Models.User;
 using System.Collections.Generic;
+using System.Linq;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
@@ -13,10 +16,15 @@ namespace Clubee.API.Services
     public class LoginService : ILoginService
     {
         private JwtAuthorizationTokenWriter JwtAuthorizationTokenWriter;
+        private IMongoRepository MongoRepository;
 
-        public LoginService(JwtAuthorizationTokenWriter jwtAuthorizationTokenWriter)
+        public LoginService(
+            JwtAuthorizationTokenWriter jwtAuthorizationTokenWriter,
+            IMongoRepository mongoRepository
+            )
         {
             this.JwtAuthorizationTokenWriter = jwtAuthorizationTokenWriter;
+            this.MongoRepository = mongoRepository;
         }
 
         /// <summary>
@@ -34,6 +42,23 @@ namespace Clubee.API.Services
                 Token = token.Token,
                 Expiration = token.Expiration
             };
+        }
+
+        /// <summary>
+        /// Generate access token for the specified user.
+        /// </summary>
+        /// <param name="dto"></param>
+        /// <returns></returns>
+        public UserLoginResultDTO Login(UserLoginDTO dto)
+        {
+            NotFoundException error = new NotFoundException("Informed user not found.");
+            User user = this.MongoRepository.Find<User>(x => x.Email == dto.Email).FirstOrDefault();
+
+            if (user == null) throw error;
+            string password = this.GeneratePasswordHash(dto.Password, user.Salt);
+
+            if (user == null) throw error;
+            return this.Login(user);
         }
 
         /// <summary>

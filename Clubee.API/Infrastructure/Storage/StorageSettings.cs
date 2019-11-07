@@ -27,6 +27,9 @@ namespace Clubee.API.Infrastructure.Storage
 
             this.Protocol = storageSection.TryGetValue("Protocol", out string protocol)
                 ? protocol : throw new MissingEnvironmentVariableException("Storage.Protocol");
+
+            this.EndpointSuffix = storageSection.TryGetValue("EndpointSuffix", out string endpointSuffix)
+                ? endpointSuffix : default;
         }
 
         /// <summary>
@@ -55,6 +58,11 @@ namespace Clubee.API.Infrastructure.Storage
         public string Protocol { get; private set; }
 
         /// <summary>
+        /// Storage endpoint suffix.
+        /// </summary>
+        public string EndpointSuffix { get; set; }
+
+        /// <summary>
         /// Storage endpoint.
         /// </summary>
         public string Endpoint => $"{this.Protocol}://{this.Address}:{this.Port}/{this.Account}";
@@ -68,7 +76,9 @@ namespace Clubee.API.Infrastructure.Storage
             return $"DefaultEndpointsProtocol={this.Protocol};"
                 + $"AccountName={this.Account};"
                 + $"AccountKey={this.Key};"
-                + $"BlobEndpoint={this.Endpoint};";
+                + this.EndpointSuffix != default 
+                    ? $"EndpointSuffix={this.EndpointSuffix}" 
+                    : $"BlobEndpoint={this.Endpoint};";
         }
     }
 }
