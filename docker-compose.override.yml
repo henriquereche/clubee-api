@@ -12,11 +12,7 @@ services:
       - JwtSettings__SecretKey=8BaypBYxaxT7DptQrxcR993AVG9f8Fz5msVqQUAKkGZ3EpxXvwpv8czak4XQ
       - JwtSettings__ExpirationSeconds=172800
 
-      - Storage__Account=devstoreaccount1
-      - Storage__Key=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==
-      - storage__Address=clubee-storage
-      - Storage__Port=10000
-      - Storage__Protocol=http
+      - Storage__Connection=DefaultEndpointsProtocol=http;AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;BlobEndpoint=http://clubee-storage:10000/devstoreaccount1;
 
       - MongoSettings__Connection=mongodb://clubee-database
       - MongoSettings__Database=clubee

@@ -24,7 +24,7 @@ namespace Clubee.API.Infrastructure.Storage
         private CloudBlobClient CreateClient()
         {
             CloudStorageAccount storageAccount = CloudStorageAccount
-                .Parse(this.StorageSettings.GetConnectionString());
+                .Parse(this.StorageSettings.Connection);
 
             return storageAccount.CreateCloudBlobClient();
         }
@@ -55,7 +55,7 @@ namespace Clubee.API.Infrastructure.Storage
             CloudBlockBlob blobObject = await this.GetObject(container, objectName);
             await blobObject.UploadFromByteArrayAsync(buffer, 0, buffer.Length);
 
-            return $"{this.StorageSettings.Endpoint}/{container}/{objectName}";
+            return blobObject.Uri.ToString();
         }
 
         /// <summary>
