@@ -1,4 +1,5 @@
 ﻿using Clubee.API.Contracts.Exceptions;
+using Clubee.API.Contracts.Infrastructure.Authorization;
 using Clubee.API.Contracts.Infrastructure.Data;
 using Clubee.API.Contracts.Services;
 using Clubee.API.Entities;
@@ -92,9 +93,9 @@ namespace Clubee.API.Services
         {
             return new Claim[]
             {
-                new Claim("id", user.Id.ToString()),
-                new Claim("businessId", user.BusinessId.ToString()),
-                new Claim("email", user.Email)
+                new Claim(ClaimsDefaults.Id, user.Id.ToString()),
+                new Claim(ClaimsDefaults.EstablishmentId, user.EstablishmentId.ToString()),
+                new Claim(ClaimsDefaults.Email, user.Email)
             };
         }
     }
