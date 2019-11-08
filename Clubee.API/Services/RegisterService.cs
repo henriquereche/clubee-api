@@ -1,6 +1,5 @@
 ﻿using Clubee.API.Contracts.Exceptions;
 using Clubee.API.Contracts.Infrastructure.Data;
-using Clubee.API.Contracts.Infrastructure.Storage;
 using Clubee.API.Contracts.Services;
 using Clubee.API.Entities;
 using Clubee.API.Models.Base;
@@ -71,18 +70,14 @@ namespace Clubee.API.Services
                 imageUrl,
                 thumbnailUrl,
                 dto.Description,
-                new GeoJson2DGeographicCoordinates(
-                    dto.Longitude,
-                    dto.Latitude
-                ),
+                dto.Location != null 
+                    ? new GeoJson2DGeographicCoordinates(dto.Location.Longitude, dto.Location.Latitude)
+                    : null,
+                dto.Location?.Address,
                 dto.EstablishmentTypes,
-                dto.Availabilities.Select(availability =>
-                    new Availability(
-                        availability.DayOfWeek,
-                        availability.OpenTime,
-                        availability.CloseTime
-                    )
-                )
+                dto.Availabilities != null
+                    ? dto.Availabilities.Select(availability => new Availability(availability.DayOfWeek, availability.OpenTime, availability.CloseTime))
+                    : null
             );
         }
 

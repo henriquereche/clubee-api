@@ -24,6 +24,7 @@ namespace Clubee.API.Entities
             string imageThumbnail, 
             string description, 
             GeoJson2DGeographicCoordinates location,
+            string address,
             IEnumerable<EstablishmentTypeEnum> establishmentTypes,
             IEnumerable<Availability> availabilities
             ) : this()
@@ -32,11 +33,8 @@ namespace Clubee.API.Entities
             this.Image = image;
             this.ImageThumbnail = imageThumbnail;
             this.Description = description;
-            this.Location = location 
-                ?? throw new ApplicationValidationException("Establishment location should be specifyed.");
-
-            if (availabilities.IsNullOrEmpty())
-                throw new ApplicationValidationException($"Missing establishment availability.");
+            this.Location = location;
+            this.Address = address;
 
             if (establishmentTypes.IsNullOrEmpty())
                 throw new ApplicationValidationException($"Establishment should have at least one type.");
@@ -44,7 +42,7 @@ namespace Clubee.API.Entities
             foreach (EstablishmentTypeEnum establishmentType in establishmentTypes)
                 this.AddEstablishmentType(establishmentType);
 
-            foreach (Availability availability in availabilities)
+            if (availabilities != null) foreach(Availability availability in availabilities)
                 this.AddAvailability(availability);
         }
 
@@ -54,6 +52,7 @@ namespace Clubee.API.Entities
         public string ImageThumbnail { get; set; }
         public string Description { get; set; }
         public GeoJson2DGeographicCoordinates Location { get; set; }
+        public string Address { get; set; }
         public ICollection<EstablishmentTypeEnum> EstablishmentTypes { get; protected set; }
         public ICollection<Availability> Availabilities { get; protected set; }
 
