@@ -47,7 +47,7 @@ namespace Clubee.API.Services
             UploadImageModel uploadedImage = await this.ImageService.UploadImage(
                 RegisterService.EstablishmentContainer, dto.Image);
             
-            Establishment establishment = this.CreateEstablishment(uploadedImage.ImageUrl, uploadedImage.ThumbnailUrl, dto);
+            Establishment establishment = this.CreateEstablishment(uploadedImage, dto);
             this.MongoRepository.Insert(establishment);
 
             User user = this.CreateUser(establishment.Id, dto.User);
@@ -63,12 +63,12 @@ namespace Clubee.API.Services
         /// <param name="thumbnailUrl"></param>
         /// <param name="dto"></param>
         /// <returns></returns>
-        private Establishment CreateEstablishment(string imageUrl, string thumbnailUrl, RegisterEstablishmentDTO dto)
+        private Establishment CreateEstablishment(UploadImageModel uploadedImage, RegisterEstablishmentDTO dto)
         {
             return new Establishment(
                 dto.Name,
-                imageUrl,
-                thumbnailUrl,
+                uploadedImage.ImageUrl,
+                uploadedImage.ThumbnailUrl,
                 dto.Description,
                 dto.Location != null 
                     ? new GeoJson2DGeographicCoordinates(dto.Location.Longitude, dto.Location.Latitude)

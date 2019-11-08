@@ -52,13 +52,13 @@ namespace Clubee.API.Services
         /// <returns></returns>
         public UserLoginResultDTO Login(UserLoginDTO dto)
         {
-            NotFoundException error = new NotFoundException("Informed user not found.");
+            NotFoundException error = new NotFoundException("User not found.");
             User user = this.MongoRepository.Find<User>(x => x.Email == dto.Email).FirstOrDefault();
 
             if (user == null) throw error;
             string password = this.GeneratePasswordHash(dto.Password, user.Salt);
 
-            if (user == null) throw error;
+            if (password != user.Password) throw error;
             return this.Login(user);
         }
 

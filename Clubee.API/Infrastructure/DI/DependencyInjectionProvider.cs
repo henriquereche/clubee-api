@@ -25,6 +25,7 @@ namespace Clubee.API.Infrastructure.DI
             services.AddScoped<IImageService, ImageService>();
             services.AddScoped<ILoginService, LoginService>();
             services.AddScoped<IRegisterService, RegisterService>();
+            services.AddScoped<IEventService, EventService>();
         }
     }
 }

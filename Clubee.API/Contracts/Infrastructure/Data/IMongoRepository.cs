@@ -1,4 +1,6 @@
 ﻿using Clubee.API.Contracts.Entities;
+using MongoDB.Bson;
+using MongoDB.Driver;
 using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
@@ -7,6 +9,14 @@ namespace Clubee.API.Contracts.Infrastructure.Data
 {
     public interface IMongoRepository
     {
+        /// <summary>
+        /// Returns IMongoCollection of required entity type.
+        /// </summary>
+        /// <typeparam name="TEntity"></typeparam>
+        /// <returns></returns>
+        IMongoCollection<TEntity> GetCollection<TEntity>()
+            where TEntity : class, IMongoEntity;
+
         /// <summary>
         /// Inserts a new document.
         /// </summary>
@@ -49,7 +59,7 @@ namespace Clubee.API.Contracts.Infrastructure.Data
         /// <typeparam name="TEntity"></typeparam>
         /// <param name="id"></param>
         /// <returns></returns>
-        TEntity Remove<TEntity>(string id)
+        TEntity Remove<TEntity>(ObjectId id)
            where TEntity : class, IMongoEntity;
 
         /// <summary>

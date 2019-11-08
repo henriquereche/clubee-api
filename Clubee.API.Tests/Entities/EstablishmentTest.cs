@@ -22,6 +22,7 @@ namespace Clubee.API.Tests.Entities
                     -47.5541214, 
                     7.5425421
                 ),
+                string.Empty,
                 new[] 
                 { 
                     EstablishmentTypeEnum.Bar, 

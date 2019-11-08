@@ -89,7 +89,7 @@ namespace Clubee.API.Entities
         /// <param name="genre"></param>
         public void AddGenre(GenreEnum genre)
         {
-            if (this.Genres.Any(x => x == genre))
+            if (!this.Genres.Any(x => x == genre))
                 this.Genres.Add(genre);
         }
     }

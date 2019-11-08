@@ -23,7 +23,7 @@ namespace Clubee.API.Infrastructure.Data
         /// </summary>
         /// <typeparam name="TEntity"></typeparam>
         /// <returns></returns>
-        private IMongoCollection<TEntity> GetCollection<TEntity>()
+        public IMongoCollection<TEntity> GetCollection<TEntity>()
             where TEntity : class, IMongoEntity => this.MongoConnection.Database.GetCollection<TEntity>(typeof(TEntity).Name);
 
         /// <summary>
@@ -84,11 +84,11 @@ namespace Clubee.API.Infrastructure.Data
         /// <typeparam name="TEntity"></typeparam>
         /// <param name="id"></param>
         /// <returns></returns>
-        public virtual TEntity Remove<TEntity>(string id)
+        public virtual TEntity Remove<TEntity>(ObjectId id)
             where TEntity : class, IMongoEntity
         {
             return this.GetCollection<TEntity>()
-                .FindOneAndDelete(filter => filter.Id == new ObjectId(id));
+                .FindOneAndDelete(filter => filter.Id == id);
         }
 
         /// <summary>

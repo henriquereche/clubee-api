@@ -8,6 +8,6 @@ namespace Clubee.API.Contracts.Exceptions
     /// </summary>
     public class NotFoundException : ApplicationResponseException
     {
-        public NotFoundException(string message) : base(message, HttpStatusCode.NotFound) { }
+        public NotFoundException(string message = default) : base(message, HttpStatusCode.NotFound) { }
     }
 }
