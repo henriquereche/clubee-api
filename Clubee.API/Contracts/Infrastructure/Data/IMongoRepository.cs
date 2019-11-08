@@ -41,7 +41,7 @@ namespace Clubee.API.Contracts.Infrastructure.Data
         /// <typeparam name="TEntity"></typeparam>
         /// <param name="id"></param>
         /// <returns></returns>
-        TEntity FindById<TEntity>(string id)
+        TEntity FindById<TEntity>(ObjectId id)
             where TEntity : class, IMongoEntity;
 
         /// <summary>

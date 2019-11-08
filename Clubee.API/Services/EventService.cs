@@ -49,6 +49,9 @@ namespace Clubee.API.Services
                 ).Unwind("Establishment")
                 .FirstOrDefault();
 
+            if (document == null)
+                return null;
+
             return new EventFindDTO
             {
                 Id = document["_id"].AsObjectId,

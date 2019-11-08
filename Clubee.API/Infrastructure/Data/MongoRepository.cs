@@ -58,11 +58,11 @@ namespace Clubee.API.Infrastructure.Data
         /// <typeparam name="TEntity"></typeparam>
         /// <param name="id"></param>
         /// <returns></returns>
-        public virtual TEntity FindById<TEntity>(string id)
+        public virtual TEntity FindById<TEntity>(ObjectId id)
             where TEntity : class, IMongoEntity
         {
             return this.GetCollection<TEntity>()
-                .Find(filter => filter.Id == new ObjectId(id)).FirstOrDefault();
+                .Find(filter => filter.Id == id).FirstOrDefault();
         }
 
         /// <summary>

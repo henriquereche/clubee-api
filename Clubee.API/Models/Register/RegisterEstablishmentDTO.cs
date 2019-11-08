@@ -1,10 +1,10 @@
 ﻿using Clubee.API.Contracts.Enums;
 using Clubee.API.Models.Base;
-using Clubee.API.Models.User;
+using Clubee.API.Models.Establishment;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
-namespace Clubee.API.Models.Establishment
+namespace Clubee.API.Models.Register
 {
     public class RegisterEstablishmentDTO
     {

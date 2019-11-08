@@ -1,4 +1,4 @@
-﻿using Clubee.API.Models.Establishment;
+﻿using Clubee.API.Models.Register;
 using Clubee.API.Models.User;
 using System.Threading.Tasks;
 

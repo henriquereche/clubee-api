@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Clubee.API.Models.User
+namespace Clubee.API.Models.Register
 {
     public class RegisterUserDTO
     {
