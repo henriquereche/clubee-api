@@ -68,6 +68,8 @@ namespace Clubee.API
                 config.SwaggerEndpoint("/swagger/v1/swagger.json", "Clubee API V1");
             });
 
+            app.UseAuthentication();
+
             // Enable response compression middleware.
             app.UseResponseCompression();
 
