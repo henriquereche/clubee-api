@@ -53,7 +53,7 @@ namespace Clubee.API.Services
             User user = this.CreateUser(establishment.Id, dto.User);
             this.MongoRepository.Insert(user);
 
-            return this.LoginService.Login(user);
+            return this.LoginService.Login(user, establishment);
         }
 
         /// <summary>

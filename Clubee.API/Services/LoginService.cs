@@ -33,9 +33,9 @@ namespace Clubee.API.Services
         /// </summary>
         /// <param name="user"></param>
         /// <returns></returns>
-        public UserLoginResultDTO Login(User user)
+        public UserLoginResultDTO Login(User user, Establishment establishment)
         {
-            IEnumerable<Claim> claims = this.CreateClaims(user);
+            IEnumerable<Claim> claims = this.CreateClaims(user, establishment);
             JwtAuthorizationTokenModel token = this.JwtAuthorizationTokenWriter.WriteToken(claims);
 
             return new UserLoginResultDTO
@@ -53,13 +53,18 @@ namespace Clubee.API.Services
         public UserLoginResultDTO Login(UserLoginDTO dto)
         {
             NotFoundException error = new NotFoundException("User not found.");
-            User user = this.MongoRepository.Find<User>(x => x.Email == dto.Email).FirstOrDefault();
+            User user = this.MongoRepository.Find<User>(
+                x => x.Email == dto.Email).FirstOrDefault();
 
             if (user == null) throw error;
             string password = this.GeneratePasswordHash(dto.Password, user.Salt);
 
             if (password != user.Password) throw error;
-            return this.Login(user);
+
+            Establishment establishment = this.MongoRepository.Find<Establishment>(
+                x => x.Id == user.EstablishmentId).FirstOrDefault();
+
+            return this.Login(user, establishment);
         }
 
         /// <summary>
@@ -89,13 +94,15 @@ namespace Clubee.API.Services
         /// </summary>
         /// <param name="user"></param>
         /// <returns></returns>
-        private IEnumerable<Claim> CreateClaims(User user)
+        private IEnumerable<Claim> CreateClaims(User user, Establishment establishment)
         {
             return new Claim[]
             {
                 new Claim(ClaimsDefaults.Id, user.Id.ToString()),
                 new Claim(ClaimsDefaults.EstablishmentId, user.EstablishmentId.ToString()),
-                new Claim(ClaimsDefaults.Email, user.Email)
+                new Claim(ClaimsDefaults.Email, user.Email),
+                new Claim(ClaimsDefaults.ImageThumbnail, establishment.ImageThumbnail),
+                new Claim(ClaimsDefaults.EstablishmentName, establishment.Name)
             };
         }
     }

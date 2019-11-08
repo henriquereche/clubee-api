@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MongoDB.Bson;
 using Swashbuckle.AspNetCore.Annotations;
+using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
 
@@ -21,7 +22,12 @@ namespace Clubee.API.Controllers
         }
 
         [HttpGet]
-        public IActionResult Get() => Ok(this.EventService.List());
+        [SwaggerOperation("List existing events.")]
+        [SwaggerResponse((int)HttpStatusCode.OK, type: typeof(IEnumerable<EventListDTO>))]
+        public IActionResult Get()
+        {
+            return Ok(this.EventService.List());
+        }
 
         [HttpGet("{id}")]
         [SwaggerOperation("Find existing event by its identifier.")]
@@ -50,12 +56,13 @@ namespace Clubee.API.Controllers
             );
 
             return Created(
-                $"{this.Request.Path.ToString()}/{createdEvent.Id}", 
+                $"{this.Request.Path.ToString()}/{createdEvent.Id}",
                 createdEvent
             );
         }
 
         [HttpDelete("{id}")]
+        [Authorize]
         [SwaggerOperation("Delete existing event by its identifier.")]
         [SwaggerResponse((int)HttpStatusCode.OK, type: typeof(EventFindDTO))]
         public IActionResult Delete([FromRoute] string id)

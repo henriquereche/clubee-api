@@ -16,5 +16,15 @@
         /// User email.
         /// </summary>
         public const string Email = "email";
+
+        /// <summary>
+        /// User establishment image.
+        /// </summary>
+        public const string ImageThumbnail = "imageThumbnail";
+
+        /// <summary>
+        /// User establishment name.
+        /// </summary>
+        public const string EstablishmentName = "establishmentName";
     }
 }

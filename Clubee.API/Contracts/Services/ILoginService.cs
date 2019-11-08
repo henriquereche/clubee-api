@@ -9,8 +9,9 @@ namespace Clubee.API.Contracts.Services
         /// Generate access token for the specified user.
         /// </summary>
         /// <param name="user"></param>
+        /// <param name="establishment"></param>
         /// <returns></returns>
-        UserLoginResultDTO Login(User user);
+        UserLoginResultDTO Login(User user, Establishment establishment);
 
         /// <summary>
         /// Generate access token for the specified user.
