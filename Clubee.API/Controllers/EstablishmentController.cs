@@ -1,5 +1,7 @@
-﻿using Clubee.API.Contracts.Services;
+﻿using Clubee.API.Contracts.Extensions;
+using Clubee.API.Contracts.Services;
 using Clubee.API.Models.Establishment;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MongoDB.Bson;
 using Swashbuckle.AspNetCore.Annotations;
@@ -39,6 +41,21 @@ namespace Clubee.API.Controllers
                 return NotFound();
 
             return Ok(establishmentFind);
+        }
+
+        [HttpPut]
+        [Authorize]
+        [SwaggerOperation("Update existing establishment.")]
+        [SwaggerResponse((int)HttpStatusCode.OK, type: typeof(EstablishmentFindDTO))]
+        public IActionResult Put([FromBody] EstablishmentUpdateDTO dto)
+        {
+            EstablishmentFindDTO updatedEstablishment = this.EstablishmentService.Update
+                (this.User.GetEstablishmentId(), dto);
+
+            if (updatedEstablishment == null)
+                return NotFound();
+
+            return Ok(dto);
         }
     }
 }

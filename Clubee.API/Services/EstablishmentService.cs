@@ -1,4 +1,6 @@
-﻿using Clubee.API.Contracts.Infrastructure.Data;
+﻿using Clubee.API.Contracts.Enums;
+using Clubee.API.Contracts.Exceptions;
+using Clubee.API.Contracts.Infrastructure.Data;
 using Clubee.API.Contracts.Services;
 using Clubee.API.Entities;
 using Clubee.API.Models.Base;
@@ -93,6 +95,45 @@ namespace Clubee.API.Services
                     Duration = availability.Duration
                 })
             };
+        }
+
+        /// <summary>
+        /// Update existing establishment.
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="dto"></param>
+        /// <returns></returns>
+        public EstablishmentFindDTO Update(ObjectId id, EstablishmentUpdateDTO dto)
+        {
+            Establishment establishment = this.MongoRepository.FindById<Establishment>(id);
+
+            if (establishment == null)
+                return null;
+
+            establishment.Name = dto.Name;
+            establishment.Description = dto.Description;
+            establishment.Address = dto.Location.Address;
+            establishment.Location = new GeoJson2DGeographicCoordinates(
+                establishment.Location.Longitude,
+                establishment.Location.Latitude
+            );
+
+            establishment.EstablishmentTypes.Clear();
+            foreach (EstablishmentTypeEnum establishmentType in dto.EstablishmentTypes)
+                establishment.AddEstablishmentType(establishmentType);
+
+            establishment.Availabilities.Clear();
+            foreach (AvailabilityUpdateDTO availability in dto.Availabilities)
+                establishment.AddAvailability(
+                    new Availability(
+                        availability.DayOfWeek,
+                        availability.OpenTime, 
+                        availability.CloseTime
+                    )
+                );
+
+            this.MongoRepository.Update(establishment);
+            return this.Find(id);
         }
 
         /// <summary>
