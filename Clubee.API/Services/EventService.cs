@@ -88,7 +88,7 @@ namespace Clubee.API.Services
                 {
                     Id = document["EstablishmentId"].AsObjectId,
                     Name = document["Establishment"]["Name"].AsString,
-                    ImageThumbnail = document["Establishment"]["ImageThumbnail"].AsString,
+                    ImageThumbnail = document["Establishment"]["ImageThumbnail"]["Uri"].AsString,
                 }
             };
         }
