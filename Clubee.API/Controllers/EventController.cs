@@ -74,5 +74,23 @@ namespace Clubee.API.Controllers
 
             return Ok(deletedEvent);
         }
+
+        [HttpPut("{id}")]
+        [Authorize]
+        [SwaggerOperation("Update existing event.")]
+        [SwaggerResponse((int)HttpStatusCode.OK, type: typeof(EventFindDTO))]
+        public async Task<IActionResult> Put([FromRoute] string id, [FromBody] EventUpdateDTO dto)
+        {
+            EventFindDTO updatedEvent = await this.EventService.Update(
+                this.User.GetEstablishmentId(),
+                new ObjectId(id),
+                dto
+            );
+
+            if (updatedEvent == null)
+                return NotFound();
+
+            return Ok(updatedEvent);
+        }
     }
 }

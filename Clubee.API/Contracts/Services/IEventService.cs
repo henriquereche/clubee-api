@@ -35,5 +35,14 @@ namespace Clubee.API.Contracts.Services
         /// <param name="id"></param>
         /// <returns></returns>
         EventFindDTO Delete(ObjectId establishmentId, ObjectId id);
+
+        /// <summary>
+        /// Update existing event.
+        /// </summary>
+        /// <param name="establishmentId"></param>
+        /// <param name="id"></param>
+        /// <param name="dto"></param>
+        /// <returns></returns>
+        Task<EventFindDTO> Update(ObjectId establishmentId, ObjectId id, EventUpdateDTO dto);
     }
 }

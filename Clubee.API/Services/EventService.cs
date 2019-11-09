@@ -165,6 +165,58 @@ namespace Clubee.API.Services
         }
 
         /// <summary>
+        /// Update existing event.
+        /// </summary>
+        /// <param name="establishmentId"></param>
+        /// <param name="id"></param>
+        /// <param name="dto"></param>
+        /// <returns></returns>
+        public async Task<EventFindDTO> Update(ObjectId establishmentId, ObjectId id, EventUpdateDTO dto)
+        {
+            Event updateEvent = this.MongoRepository.FindById<Event>(id);
+            if (updateEvent == null || updateEvent.EstablishmentId != establishmentId)
+                return null;
+
+
+            updateEvent.Name = dto.Name;
+            updateEvent.Description = dto.Description;
+            updateEvent.SetDate(dto.StartDate, dto.EndDate);
+
+            if (!string.IsNullOrEmpty(dto.Image))
+            {
+                await this.ImageService.DeleteImage(updateEvent.Image);
+                await this.ImageService.DeleteImage(updateEvent.ImageThumbnail);
+
+                UploadImageModel uploadedImage = await this.ImageService.UploadImage(
+                    EventService.EventsContainer, dto.Image);
+
+                updateEvent.Image = uploadedImage.Image;
+                updateEvent.ImageThumbnail = uploadedImage.Thumbnail;
+            }
+
+            updateEvent.Genres.Clear();
+            foreach (GenreEnum genre in dto.Genres)
+                updateEvent.AddGenre(genre);
+
+            updateEvent.Location = dto.Location != null
+                ? new Location(
+                    dto.Location.Street,
+                    dto.Location.Number,
+                    dto.Location.State,
+                    dto.Location.Country,
+                    dto.Location.City,
+                    new GeoJson2DGeographicCoordinates(
+                        dto.Location.Longitude,
+                        dto.Location.Latitude
+                    )
+                )
+                : null;
+
+            this.MongoRepository.Update(updateEvent);
+            return this.Find(id);
+        }
+
+        /// <summary>
         /// Create Event from specified dto.
         /// </summary>
         /// <param name="establishmentId"></param>
