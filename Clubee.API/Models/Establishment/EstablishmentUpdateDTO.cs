@@ -10,7 +10,6 @@ namespace Clubee.API.Models.Establishment
         [Required, MinLength(2)]
         public string Name { get; set; }
 
-        [Required]
         public string Image { get; set; }
 
         [Required, MinLength(10)]

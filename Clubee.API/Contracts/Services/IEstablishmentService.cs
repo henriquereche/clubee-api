@@ -35,6 +35,6 @@ namespace Clubee.API.Contracts.Services
         /// <param name="id"></param>
         /// <param name="dto"></param>
         /// <returns></returns>
-        EstablishmentFindDTO Update(ObjectId id, EstablishmentUpdateDTO dto);
+        Task<EstablishmentFindDTO> Update(ObjectId id, EstablishmentUpdateDTO dto);
     }
 }

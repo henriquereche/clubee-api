@@ -23,10 +23,9 @@ namespace Clubee.API.Entities
             DateTime endDate,
             string name,
             string description,
-            string image,
-            string imageThumbnail,
-            GeoJson2DGeographicCoordinates location,
-            string address,
+            Image image,
+            Image imageThumbnail,
+            Location location,
             IEnumerable<GenreEnum> genres
             ) : this()
         {
@@ -36,7 +35,6 @@ namespace Clubee.API.Entities
             this.Image = image;
             this.ImageThumbnail = imageThumbnail;
             this.Location = location;
-            this.Address = address;
 
             this.SetDate(
                 startDate,
@@ -53,10 +51,9 @@ namespace Clubee.API.Entities
         public DateTime EndDate { get; protected set; }
         public string Name { get; set; }
         public string Description { get; set; }
-        public string Image { get; set; }
-        public string ImageThumbnail { get; set; }
-        public GeoJson2DGeographicCoordinates Location { get; set; }
-        public string Address { get; set; }
+        public Image Image { get; set; }
+        public Image ImageThumbnail { get; set; }
+        public Location Location { get; set; }
         public ICollection<GenreEnum> Genres { get; protected set; }
 
         /// <summary>

@@ -59,23 +59,31 @@ namespace Clubee.API.Services
                 StartDate = document["StartDate"].ToUniversalTime(),
                 EndDate = document["EndDate"].ToUniversalTime(),
                 Genres = document["Genres"].AsBsonArray.Select(x => (GenreEnum)x.AsInt32),
-                Image = document["Image"].AsString,
+                Image = document["Image"]["Uri"].AsString,
                 Description = document["Description"].AsString,
-                Location = !document["Address"].IsBsonNull
+                Location = !document["Location"].IsBsonNull
                     ? new EventFindLocationDTO
                     {
-                        Address = document["Address"].AsString,
-                        Longitude = document["Location"].AsBsonArray.First().AsDouble,
-                        Latitude = document["Location"].AsBsonArray.Last().AsDouble
+                        City = document["Location"]["City"].AsString,
+                        Country = document["Location"]["Country"].AsString,
+                        Number = (uint)document["Location"]["Number"].AsInt32,
+                        State = document["Location"]["State"].AsString,
+                        Street = document["Location"]["Street"].AsString,
+                        Longitude = document["Location"]["Coordinates"].AsBsonArray.First().AsDouble,
+                        Latitude = document["Location"]["Coordinates"].AsBsonArray.Last().AsDouble
                     }
-                    : document["Establishment"]["Address"].IsBsonNull 
-                        ? null
-                        : new EventFindLocationDTO
+                    : !document["Establishment"]["Location"].IsBsonNull 
+                        ? new EventFindLocationDTO
                         {
-                            Address = document["Establishment"]["Address"].AsString,
-                            Longitude = document["Establishment"]["Location"].AsBsonArray.First().AsDouble,
-                            Latitude = document["Establishment"]["Location"].AsBsonArray.Last().AsDouble
-                        },
+                            City = document["Establishment"]["Location"]["City"].AsString,
+                            Country = document["Establishment"]["Location"]["Country"].AsString,
+                            Number = (uint)document["Establishment"]["Location"]["Number"].AsInt32,
+                            State = document["Establishment"]["Location"]["State"].AsString,
+                            Street = document["Establishment"]["Location"]["Street"].AsString,
+                            Longitude = document["Establishment"]["Location"]["Coordinates"].AsBsonArray.First().AsDouble,
+                            Latitude = document["Establishment"]["Location"]["Coordinates"].AsBsonArray.Last().AsDouble
+                        }
+                        : null,
                 Establishment = new EventListEstablishmentDTO
                 {
                     Id = document["EstablishmentId"].AsObjectId,
@@ -109,12 +117,12 @@ namespace Clubee.API.Services
                     StartDate = document["StartDate"].ToUniversalTime(),
                     EndDate = document["EndDate"].ToUniversalTime(),
                     Genres = document["Genres"].AsBsonArray.Select(x => (GenreEnum)x.AsInt32),
-                    ImageThumbnail = document["ImageThumbnail"].AsString,
+                    ImageThumbnail = document["ImageThumbnail"]["Uri"].AsString,
                     Establishment = new EventListEstablishmentDTO
                     {
                         Id = document["EstablishmentId"].AsObjectId,
                         Name = document["Establishment"]["Name"].AsString,
-                        ImageThumbnail = document["Establishment"]["ImageThumbnail"].AsString,
+                        ImageThumbnail = document["Establishment"]["ImageThumbnail"]["Uri"].AsString,
                     }
                 }
             ).ToList();
@@ -171,12 +179,21 @@ namespace Clubee.API.Services
                 dto.EndDate,
                 dto.Name,
                 dto.Description,
-                uploadedImage.ImageUrl,
-                uploadedImage.ThumbnailUrl,
+                uploadedImage.Image,
+                uploadedImage.Thumbnail,
                 dto.Location != null
-                    ? new GeoJson2DGeographicCoordinates(dto.Location.Longitude, dto.Location.Latitude)
+                    ? new Location(
+                        dto.Location.Street,
+                        dto.Location.Number,
+                        dto.Location.State,
+                        dto.Location.Country,
+                        dto.Location.City,
+                        new GeoJson2DGeographicCoordinates(
+                            dto.Location.Longitude,
+                            dto.Location.Latitude
+                        )
+                    )
                     : null,
-                dto.Location?.Address,
                 dto.Genres
             );
         }

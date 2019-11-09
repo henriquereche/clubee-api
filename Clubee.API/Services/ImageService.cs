@@ -1,5 +1,6 @@
 ﻿using Clubee.API.Contracts.Infrastructure.Storage;
 using Clubee.API.Contracts.Services;
+using Clubee.API.Entities;
 using Clubee.API.Models.Base;
 using ImageMagick;
 using System;
@@ -63,19 +64,43 @@ namespace Clubee.API.Services
         {
             CompressedImageModel compressedImage = this.CompressFromBase64(base64Image);
 
+            string imageName = $"{this.GetRandomGuidStringValue()}.{compressedImage.Format}";
             string imageUrl = await this.ObjectStorageProvider.SetObject(
                 container,
-                $"{this.GetRandomGuidStringValue()}.{compressedImage.Format}",
+                imageName,
                 compressedImage.Buffer
             );
 
+            string thumbnailName = $"{this.GetRandomGuidStringValue()}.{compressedImage.Format}";
             string thumbnailUrl = await this.ObjectStorageProvider.SetObject(
                 container,
-                $"{this.GetRandomGuidStringValue()}.{compressedImage.Format}",
+                thumbnailName,
                 compressedImage.ThumbnailBuffer
             );
 
-            return new UploadImageModel(imageUrl, thumbnailUrl);
+            return new UploadImageModel(
+                new Image(
+                    imageUrl, 
+                    imageName, 
+                    container
+                ), 
+                new Image(
+                    thumbnailUrl,
+                    thumbnailName,
+                    container
+                )
+            );
+        }
+
+        /// <summary>
+        /// Delete existing image.
+        /// </summary>
+        /// <param name="image"></param>
+        /// <returns></returns>
+        public async Task DeleteImage(Image image)
+        {
+            await this.ObjectStorageProvider
+                .DeleteObject(image.Container, image.FileName);
         }
 
         /// <summary>

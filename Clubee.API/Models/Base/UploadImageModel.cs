@@ -1,14 +1,16 @@
-﻿namespace Clubee.API.Models.Base
+﻿using Clubee.API.Entities;
+
+namespace Clubee.API.Models.Base
 {
     public class UploadImageModel
     {
-        public readonly string ImageUrl;
-        public readonly string ThumbnailUrl;
+        public readonly Image Image;
+        public readonly Image Thumbnail;
 
-        public UploadImageModel(string imageUrl, string thumbnailUrl)
+        public UploadImageModel(Image image, Image thumbnail)
         {
-            this.ImageUrl = imageUrl;
-            this.ThumbnailUrl = thumbnailUrl;
+            this.Image = image;
+            this.Thumbnail = thumbnail;
         }
     }
 }

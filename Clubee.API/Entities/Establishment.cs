@@ -3,7 +3,6 @@ using Clubee.API.Contracts.Enums;
 using Clubee.API.Contracts.Exceptions;
 using Clubee.API.Contracts.Extensions;
 using MongoDB.Bson;
-using MongoDB.Driver.GeoJsonObjectModel;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,12 +18,11 @@ namespace Clubee.API.Entities
         }
 
         public Establishment(
-            string name, 
-            string image, 
-            string imageThumbnail, 
-            string description, 
-            GeoJson2DGeographicCoordinates location,
-            string address,
+            string name,
+            Image image,
+            Image imageThumbnail,
+            string description,
+            Location location,
             IEnumerable<EstablishmentTypeEnum> establishmentTypes,
             IEnumerable<Availability> availabilities
             ) : this()
@@ -34,7 +32,6 @@ namespace Clubee.API.Entities
             this.ImageThumbnail = imageThumbnail;
             this.Description = description;
             this.Location = location;
-            this.Address = address;
 
             if (establishmentTypes.IsNullOrEmpty())
                 throw new ApplicationValidationException($"Establishment should have at least one type.");
@@ -42,17 +39,16 @@ namespace Clubee.API.Entities
             foreach (EstablishmentTypeEnum establishmentType in establishmentTypes)
                 this.AddEstablishmentType(establishmentType);
 
-            if (availabilities != null) foreach(Availability availability in availabilities)
-                this.AddAvailability(availability);
+            if (availabilities != null) foreach (Availability availability in availabilities)
+                    this.AddAvailability(availability);
         }
 
         public ObjectId Id { get; protected set; }
         public string Name { get; set; }
-        public string Image { get; set; }
-        public string ImageThumbnail { get; set; }
+        public Image Image { get; set; }
+        public Image ImageThumbnail { get; set; }
         public string Description { get; set; }
-        public GeoJson2DGeographicCoordinates Location { get; set; }
-        public string Address { get; set; }
+        public Location Location {get; set;}
         public ICollection<EstablishmentTypeEnum> EstablishmentTypes { get; protected set; }
         public ICollection<Availability> Availabilities { get; protected set; }
 

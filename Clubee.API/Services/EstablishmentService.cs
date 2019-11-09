@@ -54,7 +54,7 @@ namespace Clubee.API.Services
                 {
                     Id = x.Id,
                     EstablishmentTypes = x.EstablishmentTypes,
-                    ImageThumbnail = x.ImageThumbnail,
+                    ImageThumbnail = x.ImageThumbnail.Uri,
                     Name = x.Name
                 });
         }
@@ -75,15 +75,18 @@ namespace Clubee.API.Services
             {
                 Id = establishment.Id,
                 Name = establishment.Name,
-                Image = establishment.Image,
-                ImageThumbnail = establishment.ImageThumbnail,
+                Image = establishment.Image.Uri,
                 Description = establishment.Description,
-                Location = establishment.Address != null
+                Location = establishment.Location != null
                     ? new EstablishmentFindLocationDTO
                     {
-                        Address = establishment.Address,
-                        Latitude = establishment.Location.Latitude,
-                        Longitude = establishment.Location.Longitude
+                        Street = establishment.Location.Street,
+                        City = establishment.Location.City,
+                        Country = establishment.Location.Country,
+                        Number = establishment.Location.Number,
+                        State =  establishment.Location.State,
+                        Latitude = establishment.Location.Coordinates.Latitude,
+                        Longitude = establishment.Location.Coordinates.Longitude
                     }
                     : null,
                 EstablishmentTypes = establishment.EstablishmentTypes,
@@ -103,7 +106,7 @@ namespace Clubee.API.Services
         /// <param name="id"></param>
         /// <param name="dto"></param>
         /// <returns></returns>
-        public EstablishmentFindDTO Update(ObjectId id, EstablishmentUpdateDTO dto)
+        public async Task<EstablishmentFindDTO> Update(ObjectId id, EstablishmentUpdateDTO dto)
         {
             Establishment establishment = this.MongoRepository.FindById<Establishment>(id);
 
@@ -112,11 +115,29 @@ namespace Clubee.API.Services
 
             establishment.Name = dto.Name;
             establishment.Description = dto.Description;
-            establishment.Address = dto.Location.Address;
-            establishment.Location = new GeoJson2DGeographicCoordinates(
-                establishment.Location.Longitude,
-                establishment.Location.Latitude
+            establishment.Location = new Location(
+                dto.Location.Street,
+                dto.Location.Number,
+                dto.Location.State,
+                dto.Location.Country,
+                dto.Location.City,
+                new GeoJson2DGeographicCoordinates(
+                    dto.Location.Longitude,
+                    dto.Location.Latitude
+                )
             );
+
+            if (!string.IsNullOrEmpty(dto.Image))
+            {
+                await this.ImageService.DeleteImage(establishment.Image);
+                await this.ImageService.DeleteImage(establishment.ImageThumbnail);
+
+                UploadImageModel uploadedImage = await this.ImageService.UploadImage(
+                    EstablishmentService.EstablishmentContainer, dto.Image);
+
+                establishment.Image = uploadedImage.Image;
+                establishment.ImageThumbnail = uploadedImage.Thumbnail;
+            }
 
             establishment.EstablishmentTypes.Clear();
             foreach (EstablishmentTypeEnum establishmentType in dto.EstablishmentTypes)
@@ -147,13 +168,22 @@ namespace Clubee.API.Services
         {
             return new Establishment(
                 dto.Name,
-                uploadedImage.ImageUrl,
-                uploadedImage.ThumbnailUrl,
+                uploadedImage.Image,
+                uploadedImage.Thumbnail,
                 dto.Description,
                 dto.Location != null
-                    ? new GeoJson2DGeographicCoordinates(dto.Location.Longitude, dto.Location.Latitude)
+                    ? new Location(
+                        dto.Location.Street, 
+                        dto.Location.Number, 
+                        dto.Location.State, 
+                        dto.Location.Country, 
+                        dto.Location.City, 
+                        new GeoJson2DGeographicCoordinates(
+                            dto.Location.Longitude, 
+                            dto.Location.Latitude
+                        )
+                    )
                     : null,
-                dto.Location?.Address,
                 dto.EstablishmentTypes,
                 dto.Availabilities != null
                     ? dto.Availabilities.Select(availability => new Availability(availability.DayOfWeek, availability.OpenTime, availability.CloseTime))

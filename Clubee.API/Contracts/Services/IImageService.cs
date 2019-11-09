@@ -1,4 +1,5 @@
-﻿using Clubee.API.Models.Base;
+﻿using Clubee.API.Entities;
+using Clubee.API.Models.Base;
 using System.Threading.Tasks;
 
 namespace Clubee.API.Contracts.Services
@@ -19,5 +20,12 @@ namespace Clubee.API.Contracts.Services
         /// <param name="base64Image"></param>
         /// <returns></returns>
         Task<UploadImageModel> UploadImage(string container, string base64Image);
+
+        /// <summary>
+        /// Delete existing image.
+        /// </summary>
+        /// <param name="image"></param>
+        /// <returns></returns>
+        Task DeleteImage(Image image);
     }
 }

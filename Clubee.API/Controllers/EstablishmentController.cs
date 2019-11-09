@@ -7,6 +7,7 @@ using MongoDB.Bson;
 using Swashbuckle.AspNetCore.Annotations;
 using System.Collections.Generic;
 using System.Net;
+using System.Threading.Tasks;
 
 namespace Clubee.API.Controllers
 {
@@ -47,15 +48,15 @@ namespace Clubee.API.Controllers
         [Authorize]
         [SwaggerOperation("Update existing establishment.")]
         [SwaggerResponse((int)HttpStatusCode.OK, type: typeof(EstablishmentFindDTO))]
-        public IActionResult Put([FromBody] EstablishmentUpdateDTO dto)
+        public async Task<IActionResult> Put([FromBody] EstablishmentUpdateDTO dto)
         {
-            EstablishmentFindDTO updatedEstablishment = this.EstablishmentService.Update
+            EstablishmentFindDTO updatedEstablishment = await this.EstablishmentService.Update
                 (this.User.GetEstablishmentId(), dto);
 
             if (updatedEstablishment == null)
                 return NotFound();
 
-            return Ok(dto);
+            return Ok(updatedEstablishment);
         }
     }
 }

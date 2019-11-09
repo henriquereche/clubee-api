@@ -101,7 +101,7 @@ namespace Clubee.API.Services
                 new Claim(ClaimsDefaults.Id, user.Id.ToString()),
                 new Claim(ClaimsDefaults.EstablishmentId, user.EstablishmentId.ToString()),
                 new Claim(ClaimsDefaults.Email, user.Email),
-                new Claim(ClaimsDefaults.ImageThumbnail, establishment.ImageThumbnail),
+                new Claim(ClaimsDefaults.ImageThumbnail, establishment.ImageThumbnail.Uri),
                 new Claim(ClaimsDefaults.EstablishmentName, establishment.Name)
             };
         }
