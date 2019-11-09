@@ -1,6 +1,7 @@
 ﻿using Clubee.API.Infrastructure.Authorization;
 using Clubee.API.Infrastructure.DI;
 using Clubee.API.Infrastructure.Middlewares;
+using Clubee.API.Infrastructure.Swagger;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
@@ -39,6 +40,8 @@ namespace Clubee.API
             {
                 config.EnableAnnotations();
                 config.SwaggerDoc("v1", new Info { Title = "Clubee API", Version = "v1" });
+
+                config.OperationFilter<AuthorizationOperationFilter>();
             });
 
             // Register application services.
