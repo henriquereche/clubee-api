@@ -1,4 +1,5 @@
-﻿using Clubee.API.Infrastructure.Authorization;
+﻿using Clubee.API.Contracts.Infrastructure.Data;
+using Clubee.API.Infrastructure.Authorization;
 using Clubee.API.Infrastructure.DI;
 using Clubee.API.Infrastructure.Middlewares;
 using Clubee.API.Infrastructure.Swagger;
@@ -49,6 +50,8 @@ namespace Clubee.API
 
             // Enble reponse compression services.
             services.AddResponseCompression();
+
+            services.InitializeCollectionsIndexes();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
