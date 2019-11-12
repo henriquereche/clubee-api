@@ -5,6 +5,7 @@ using Clubee.API.Contracts.Services;
 using Clubee.API.Entities;
 using Clubee.API.Models.Base;
 using Clubee.API.Models.Event;
+using Clubee.API.Models.Filters;
 using MongoDB.Bson;
 using MongoDB.Driver;
 using MongoDB.Driver.GeoJsonObjectModel;
@@ -97,17 +98,52 @@ namespace Clubee.API.Services
         /// Return event list.
         /// </summary>
         /// <returns></returns>
-        public IEnumerable<EventListDTO> List()
+        public IEnumerable<EventListDTO> List(EventFilter filter)
         {
-            IMongoCollection<Event> eventCollection = this.MongoRepository.GetCollection<Event>();
+            IAggregateFluent<Event> eventAggregateFluent = this.MongoRepository.GetCollection<Event>().Aggregate();
 
-            IEnumerable<BsonDocument> documents = eventCollection.Aggregate().Lookup(
+            if (filter.GeospatialQuery)
+            {
+                BsonDocument geoNearOptions = new BsonDocument {
+                    {
+                        "near", new BsonDocument {
+                            { "type", "Point" },
+                            { "coordinates", new BsonArray { filter.Longitude.Value, filter.Latitude.Value} },
+                        }
+                    },
+                    { "maxDistance", filter.Meters ?? 10000 },
+                    { "includeLocs", "Location.Coordinates" },
+                    { "distanceField", "Location.Distance" },
+                    { "spherical" , true }
+                };
+
+                eventAggregateFluent = eventAggregateFluent.AppendStage(
+                    (PipelineStageDefinition<Event, Event>)new BsonDocument { { "$geoNear", geoNearOptions } }
+                );
+            }
+
+            if (!string.IsNullOrEmpty(filter.Query))
+                eventAggregateFluent = eventAggregateFluent.Match(
+                    Builders<Event>.Filter.Text(filter.Query, new TextSearchOptions { CaseSensitive = false, DiacriticSensitive = false, Language = "portuguese" })
+                );
+
+            if (!string.IsNullOrEmpty(filter.EstablishmentId))
+                eventAggregateFluent = eventAggregateFluent.Match(document => document.EstablishmentId == new ObjectId(filter.EstablishmentId));
+
+            if (filter.Genre.HasValue)
+                eventAggregateFluent = eventAggregateFluent.Match(document => document.Genres.Contains(filter.Genre.Value));
+
+            IAggregateFluent<BsonDocument> aggregateFluent = eventAggregateFluent.Lookup(
                 nameof(Establishment),
                 "EstablishmentId",
                 "_id",
                 "Establishment"
-            ).Unwind("Establishment")
-            .ToList();
+            ).Unwind("Establishment");
+
+            IEnumerable<BsonDocument> documents = aggregateFluent
+                .Skip((filter.Page - 1) * filter.PageSize)
+                .Limit(filter.PageSize)
+                .ToList();
 
             return documents.Select(document =>
                 new EventListDTO
@@ -176,7 +212,6 @@ namespace Clubee.API.Services
             Event updateEvent = this.MongoRepository.FindById<Event>(id);
             if (updateEvent == null || updateEvent.EstablishmentId != establishmentId)
                 return null;
-
 
             updateEvent.Name = dto.Name;
             updateEvent.Description = dto.Description;

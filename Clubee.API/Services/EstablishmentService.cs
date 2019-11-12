@@ -84,7 +84,7 @@ namespace Clubee.API.Services
                         City = establishment.Location.City,
                         Country = establishment.Location.Country,
                         Number = establishment.Location.Number,
-                        State =  establishment.Location.State,
+                        State = establishment.Location.State,
                         Latitude = establishment.Location.Coordinates.Latitude,
                         Longitude = establishment.Location.Coordinates.Longitude
                     }
@@ -115,17 +115,19 @@ namespace Clubee.API.Services
 
             establishment.Name = dto.Name;
             establishment.Description = dto.Description;
-            establishment.Location = new Location(
-                dto.Location.Street,
-                dto.Location.Number,
-                dto.Location.State,
-                dto.Location.Country,
-                dto.Location.City,
-                new GeoJson2DGeographicCoordinates(
-                    dto.Location.Longitude,
-                    dto.Location.Latitude
-                )
-            );
+
+            if (dto.Location != null)
+                establishment.Location = new Location(
+                    dto.Location.Street,
+                    dto.Location.Number,
+                    dto.Location.State,
+                    dto.Location.Country,
+                    dto.Location.City,
+                    new GeoJson2DGeographicCoordinates(
+                        dto.Location.Longitude,
+                        dto.Location.Latitude
+                    )
+                );
 
             if (!string.IsNullOrEmpty(dto.Image))
             {
@@ -143,15 +145,18 @@ namespace Clubee.API.Services
             foreach (EstablishmentTypeEnum establishmentType in dto.EstablishmentTypes)
                 establishment.AddEstablishmentType(establishmentType);
 
-            establishment.Availabilities.Clear();
-            foreach (AvailabilityUpdateDTO availability in dto.Availabilities)
-                establishment.AddAvailability(
-                    new Availability(
-                        availability.DayOfWeek,
-                        availability.OpenTime, 
-                        availability.CloseTime
-                    )
-                );
+            if (dto.Availabilities != null)
+            {
+                establishment.Availabilities.Clear();
+                foreach (AvailabilityUpdateDTO availability in dto.Availabilities)
+                    establishment.AddAvailability(
+                        new Availability(
+                            availability.DayOfWeek,
+                            availability.OpenTime,
+                            availability.CloseTime
+                        )
+                    );
+            }
 
             this.MongoRepository.Update(establishment);
             return this.Find(id);
@@ -173,13 +178,13 @@ namespace Clubee.API.Services
                 dto.Description,
                 dto.Location != null
                     ? new Location(
-                        dto.Location.Street, 
-                        dto.Location.Number, 
-                        dto.Location.State, 
-                        dto.Location.Country, 
-                        dto.Location.City, 
+                        dto.Location.Street,
+                        dto.Location.Number,
+                        dto.Location.State,
+                        dto.Location.Country,
+                        dto.Location.City,
                         new GeoJson2DGeographicCoordinates(
-                            dto.Location.Longitude, 
+                            dto.Location.Longitude,
                             dto.Location.Latitude
                         )
                     )
