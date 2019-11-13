@@ -93,7 +93,7 @@ namespace Clubee.API.Services
             return documents.Select(document => 
                 new EstablishmentListDTO
                 {
-                    Id = document["Id"].AsObjectId,
+                    Id = document["_id"].AsObjectId,
                     EstablishmentTypes = document["EstablishmentTypes"].AsBsonArray.Select(x => (EstablishmentTypeEnum)x.AsInt32),
                     ImageThumbnail = document["ImageThumbnail"]["Uri"].AsString,
                     Name = document["Name"].AsString,
