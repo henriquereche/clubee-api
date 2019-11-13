@@ -62,29 +62,16 @@ namespace Clubee.API.Services
                 Genres = document["Genres"].AsBsonArray.Select(x => (GenreEnum)x.AsInt32),
                 Image = document["Image"]["Uri"].AsString,
                 Description = document["Description"].AsString,
-                Location = !document["Location"].IsBsonNull
-                    ? new EventFindLocationDTO
-                    {
-                        City = document["Location"]["City"].AsString,
-                        Country = document["Location"]["Country"].AsString,
-                        Number = (uint)document["Location"]["Number"].AsInt32,
-                        State = document["Location"]["State"].AsString,
-                        Street = document["Location"]["Street"].AsString,
-                        Longitude = document["Location"]["Coordinates"].AsBsonArray.First().AsDouble,
-                        Latitude = document["Location"]["Coordinates"].AsBsonArray.Last().AsDouble
-                    }
-                    : !document["Establishment"]["Location"].IsBsonNull 
-                        ? new EventFindLocationDTO
-                        {
-                            City = document["Establishment"]["Location"]["City"].AsString,
-                            Country = document["Establishment"]["Location"]["Country"].AsString,
-                            Number = (uint)document["Establishment"]["Location"]["Number"].AsInt32,
-                            State = document["Establishment"]["Location"]["State"].AsString,
-                            Street = document["Establishment"]["Location"]["Street"].AsString,
-                            Longitude = document["Establishment"]["Location"]["Coordinates"].AsBsonArray.First().AsDouble,
-                            Latitude = document["Establishment"]["Location"]["Coordinates"].AsBsonArray.Last().AsDouble
-                        }
-                        : null,
+                Location = new EventFindLocationDTO
+                {
+                    City = document["Location"]["City"].AsString,
+                    Country = document["Location"]["Country"].AsString,
+                    Number = (uint)document["Location"]["Number"].AsInt32,
+                    State = document["Location"]["State"].AsString,
+                    Street = document["Location"]["Street"].AsString,
+                    Longitude = document["Location"]["Coordinates"].AsBsonArray.First().AsDouble,
+                    Latitude = document["Location"]["Coordinates"].AsBsonArray.Last().AsDouble
+                },
                 Establishment = new EventListEstablishmentDTO
                 {
                     Id = document["EstablishmentId"].AsObjectId,
@@ -108,7 +95,7 @@ namespace Clubee.API.Services
                     {
                         "near", new BsonDocument {
                             { "type", "Point" },
-                            { "coordinates", new BsonArray { filter.Longitude.Value, filter.Latitude.Value} },
+                            { "coordinates", new BsonArray { filter.Longitude.Value, filter.Latitude.Value } },
                         }
                     },
                     { "maxDistance", filter.Meters ?? 10000 },
@@ -122,16 +109,17 @@ namespace Clubee.API.Services
                 );
             }
 
-            if (!string.IsNullOrEmpty(filter.Query))
-                eventAggregateFluent = eventAggregateFluent.Match(
-                    Builders<Event>.Filter.Text(filter.Query, new TextSearchOptions { CaseSensitive = false, DiacriticSensitive = false, Language = "portuguese" })
-                );
-
             if (!string.IsNullOrEmpty(filter.EstablishmentId))
                 eventAggregateFluent = eventAggregateFluent.Match(document => document.EstablishmentId == new ObjectId(filter.EstablishmentId));
 
             if (filter.Genre.HasValue)
                 eventAggregateFluent = eventAggregateFluent.Match(document => document.Genres.Contains(filter.Genre.Value));
+
+            if (!string.IsNullOrEmpty(filter.Query))
+                eventAggregateFluent = eventAggregateFluent.Match(
+                    document => document.Name.Contains(filter.Query)
+                        || document.Description.Contains(filter.Query)
+                );
 
             IAggregateFluent<BsonDocument> aggregateFluent = eventAggregateFluent.Lookup(
                 nameof(Establishment),

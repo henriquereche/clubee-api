@@ -1,5 +1,4 @@
 ﻿using Clubee.API.Contracts.Enums;
-using Clubee.API.Contracts.Exceptions;
 using Clubee.API.Contracts.Infrastructure.Data;
 using Clubee.API.Contracts.Services;
 using Clubee.API.Entities;

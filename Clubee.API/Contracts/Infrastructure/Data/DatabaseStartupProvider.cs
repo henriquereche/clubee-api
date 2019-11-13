@@ -21,28 +21,8 @@ namespace Clubee.API.Contracts.Infrastructure.Data
                 new CreateIndexModel<Establishment>(Builders<Establishment>.IndexKeys.Geo2DSphere(establishmentKey => establishmentKey.Location.Coordinates))
             );
 
-            establishmentCollection.Indexes.CreateOne(
-                new CreateIndexModel<Establishment>(
-                    Builders<Establishment>.IndexKeys.Text(establishmentKey => establishmentKey.Description)
-                        .Text(establishmentKey => establishmentKey.Name)
-                        .Text(establishmentKey => establishmentKey.Location.Street)
-                        .Text(establishmentKey => establishmentKey.Location.Number),
-                    new CreateIndexOptions { DefaultLanguage = "portuguese" }
-                )
-            ); 
-
             eventCollection.Indexes.CreateOne(
                 new CreateIndexModel<Event>(Builders<Event>.IndexKeys.Geo2DSphere(eventKey => eventKey.Location.Coordinates))
-            );
-
-            eventCollection.Indexes.CreateOne(
-                new CreateIndexModel<Event>(
-                    Builders<Event>.IndexKeys.Text(eventKey => eventKey.Name)
-                        .Text(eventKey => eventKey.Description)
-                        .Text(eventKey => eventKey.Location.Street)
-                        .Text(eventKey => eventKey.Location.Number),
-                    new CreateIndexOptions { DefaultLanguage = "portuguese" }
-                )
             );
         }
     }
