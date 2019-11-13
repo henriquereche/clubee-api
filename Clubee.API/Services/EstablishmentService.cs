@@ -4,8 +4,10 @@ using Clubee.API.Contracts.Services;
 using Clubee.API.Entities;
 using Clubee.API.Models.Base;
 using Clubee.API.Models.Establishment;
+using Clubee.API.Models.Filters;
 using Clubee.API.Models.Register;
 using MongoDB.Bson;
+using MongoDB.Driver;
 using MongoDB.Driver.GeoJsonObjectModel;
 using System.Collections.Generic;
 using System.Linq;
@@ -45,17 +47,57 @@ namespace Clubee.API.Services
         /// <summary>
         /// Return establishment list.
         /// </summary>
+        /// <param name="filter"></param>
         /// <returns></returns>
-        public IEnumerable<EstablishmentListDTO> List()
+        public IEnumerable<EstablishmentListDTO> List(EstablishmentFilter filter)
         {
-            return this.MongoRepository.Find<Establishment>(x => true)
-                .Select(x => new EstablishmentListDTO
+            IAggregateFluent<Establishment> establishmentAggregateFluent = this.MongoRepository
+                .GetCollection<Establishment>().Aggregate();
+
+            if (filter.GeospatialQuery)
+            {
+                BsonDocument geoNearOptions = new BsonDocument {
+                    {
+                        "near", new BsonDocument {
+                            { "type", "Point" },
+                            { "coordinates", new BsonArray { filter.Longitude.Value, filter.Latitude.Value } },
+                        }
+                    },
+                    { "maxDistance", filter.Meters ?? 10000 },
+                    { "includeLocs", "Location.Coordinates" },
+                    { "distanceField", "Location.Distance" },
+                    { "spherical" , true }
+                };
+
+                establishmentAggregateFluent = establishmentAggregateFluent.AppendStage(
+                    (PipelineStageDefinition<Establishment, Establishment>)new BsonDocument { { "$geoNear", geoNearOptions } }
+                );
+            }
+
+            if (filter.EstablishmentType.HasValue)
+                establishmentAggregateFluent = establishmentAggregateFluent
+                    .Match(document => document.EstablishmentTypes.Contains(filter.EstablishmentType.Value));
+
+            if (!string.IsNullOrEmpty(filter.Query))
+                establishmentAggregateFluent = establishmentAggregateFluent.Match(
+                    document => document.Name.Contains(filter.Query)
+                        || document.Description.Contains(filter.Query)
+                );
+
+            IEnumerable<Establishment> documents = establishmentAggregateFluent
+                .Skip((filter.Page - 1) * filter.PageSize)
+                .Limit(filter.PageSize)
+                .ToList();
+
+            return documents.Select(x => 
+                new EstablishmentListDTO
                 {
                     Id = x.Id,
                     EstablishmentTypes = x.EstablishmentTypes,
                     ImageThumbnail = x.ImageThumbnail.Uri,
                     Name = x.Name
-                });
+                }
+            ).ToList();
         }
 
         /// <summary>
