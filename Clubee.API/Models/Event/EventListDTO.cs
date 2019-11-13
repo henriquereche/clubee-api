@@ -12,6 +12,7 @@ namespace Clubee.API.Models.Event
         public DateTime EndDate { get; set; }
         public string Name { get; set; }
         public string ImageThumbnail { get; set; }
+        public double? Distance { get; set; }
         public IEnumerable<GenreEnum> Genres { get; set; }
         public EventListEstablishmentDTO Establishment { get; set; }
     }

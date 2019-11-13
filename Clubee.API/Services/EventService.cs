@@ -142,6 +142,9 @@ namespace Clubee.API.Services
                     EndDate = document["EndDate"].ToUniversalTime(),
                     Genres = document["Genres"].AsBsonArray.Select(x => (GenreEnum)x.AsInt32),
                     ImageThumbnail = document["ImageThumbnail"]["Uri"].AsString,
+                    Distance = document["Location"].AsBsonDocument.Contains("Distance")
+                        ? document["Location"]["Distance"].AsDouble
+                        : (double?)null,
                     Establishment = new EventListEstablishmentDTO
                     {
                         Id = document["EstablishmentId"].AsObjectId,

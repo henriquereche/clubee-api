@@ -84,18 +84,22 @@ namespace Clubee.API.Services
                         || document.Description.Contains(filter.Query)
                 );
 
-            IEnumerable<Establishment> documents = establishmentAggregateFluent
+            IEnumerable<BsonDocument> documents = establishmentAggregateFluent
                 .Skip((filter.Page - 1) * filter.PageSize)
                 .Limit(filter.PageSize)
+                .As<BsonDocument>()
                 .ToList();
 
-            return documents.Select(x => 
+            return documents.Select(document => 
                 new EstablishmentListDTO
                 {
-                    Id = x.Id,
-                    EstablishmentTypes = x.EstablishmentTypes,
-                    ImageThumbnail = x.ImageThumbnail.Uri,
-                    Name = x.Name
+                    Id = document["Id"].AsObjectId,
+                    EstablishmentTypes = document["EstablishmentTypes"].AsBsonArray.Select(x => (EstablishmentTypeEnum)x.AsInt32),
+                    ImageThumbnail = document["ImageThumbnail"]["Uri"].AsString,
+                    Name = document["Name"].AsString,
+                    Distance = document["Location"].AsBsonDocument.Contains("Distance")
+                        ? document["Location"]["Distance"].AsDouble
+                        : (double?)null
                 }
             ).ToList();
         }

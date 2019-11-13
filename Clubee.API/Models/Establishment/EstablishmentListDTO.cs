@@ -9,6 +9,7 @@ namespace Clubee.API.Models.Establishment
         public ObjectId Id { get; set; }
         public string Name { get; set; }
         public string ImageThumbnail { get; set; }
+        public double? Distance { get; set; }
         public IEnumerable<EstablishmentTypeEnum> EstablishmentTypes { get; set; }
     }
 }
