@@ -3,7 +3,6 @@ using Clubee.API.Contracts.Enums;
 using Clubee.API.Contracts.Exceptions;
 using Clubee.API.Contracts.Extensions;
 using MongoDB.Bson;
-using MongoDB.Driver.GeoJsonObjectModel;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -26,6 +25,7 @@ namespace Clubee.API.Entities
             Image image,
             Image imageThumbnail,
             Location location,
+            bool establishmentLocation,
             IEnumerable<GenreEnum> genres
             ) : this()
         {
@@ -35,6 +35,7 @@ namespace Clubee.API.Entities
             this.Image = image;
             this.ImageThumbnail = imageThumbnail;
             this.Location = location;
+            this.EstablishmentLocation = establishmentLocation;
 
             this.SetDate(
                 startDate,
@@ -54,6 +55,7 @@ namespace Clubee.API.Entities
         public Image Image { get; set; }
         public Image ImageThumbnail { get; set; }
         public Location Location { get; set; }
+        public bool EstablishmentLocation { get; set; }
         public ICollection<GenreEnum> Genres { get; protected set; }
 
         /// <summary>

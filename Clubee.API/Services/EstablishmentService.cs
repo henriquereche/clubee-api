@@ -117,6 +117,7 @@ namespace Clubee.API.Services
             establishment.Description = dto.Description;
 
             if (dto.Location != null)
+            {
                 establishment.Location = new Location(
                     dto.Location.Street,
                     dto.Location.Number,
@@ -129,6 +130,16 @@ namespace Clubee.API.Services
                     )
                 );
 
+                IEnumerable<Event> establishmentEvents = this.MongoRepository
+                    .Find<Event>(x => x.EstablishmentLocation);
+
+                foreach (Event establishmentEvent in establishmentEvents)
+                {
+                    establishmentEvent.Location = establishment.Location;
+                    this.MongoRepository.Update(establishmentEvent);
+                }
+            }
+                
             if (!string.IsNullOrEmpty(dto.Image))
             {
                 await this.ImageService.DeleteImage(establishment.Image);

@@ -1,5 +1,4 @@
 ﻿using Clubee.API.Contracts.Enums;
-using Newtonsoft.Json;
 
 namespace Clubee.API.Models.Filters
 {
@@ -12,8 +11,7 @@ namespace Clubee.API.Models.Filters
         public double? Meters { get; set; }
         public GenreEnum? Genre { get; set; }
 
-        [JsonIgnore]
-        public bool GeospatialQuery => 
+        internal bool GeospatialQuery => 
             this.Longitude.HasValue && this.Latitude.HasValue;
     }
 }

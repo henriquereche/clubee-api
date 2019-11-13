@@ -174,7 +174,9 @@ namespace Clubee.API.Services
         public async Task<EventFindDTO> Insert(ObjectId establishmentId, EventInsertDTO dto)
         {
             UploadImageModel uploadedImage = await this.ImageService.UploadImage(EventService.EventsContainer, dto.Image);
-            Event eventEntity = this.CreateEvent(establishmentId, uploadedImage, dto);
+            Establishment establishment = this.MongoRepository.FindById<Establishment>(establishmentId);
+
+            Event eventEntity = this.CreateEvent(establishment, uploadedImage, dto);
 
             this.MongoRepository.Insert(eventEntity);
             return this.Find(eventEntity.Id);
@@ -213,6 +215,8 @@ namespace Clubee.API.Services
             if (updateEvent == null || updateEvent.EstablishmentId != establishmentId)
                 return null;
 
+            Establishment establishment = this.MongoRepository.FindById<Establishment>(establishmentId);
+
             updateEvent.Name = dto.Name;
             updateEvent.Description = dto.Description;
             updateEvent.SetDate(dto.StartDate, dto.EndDate);
@@ -233,6 +237,7 @@ namespace Clubee.API.Services
             foreach (GenreEnum genre in dto.Genres)
                 updateEvent.AddGenre(genre);
 
+            updateEvent.EstablishmentLocation = dto.Location == null;
             updateEvent.Location = dto.Location != null
                 ? new Location(
                     dto.Location.Street,
@@ -245,7 +250,7 @@ namespace Clubee.API.Services
                         dto.Location.Latitude
                     )
                 )
-                : null;
+                : establishment.Location;
 
             this.MongoRepository.Update(updateEvent);
             return this.Find(id);
@@ -254,14 +259,14 @@ namespace Clubee.API.Services
         /// <summary>
         /// Create Event from specified dto.
         /// </summary>
-        /// <param name="establishmentId"></param>
+        /// <param name="establishment"></param>
         /// <param name="uploadedImage"></param>
         /// <param name="dto"></param>
         /// <returns></returns>
-        private Event CreateEvent(ObjectId establishmentId, UploadImageModel uploadedImage, EventInsertDTO dto)
+        private Event CreateEvent(Establishment establishment, UploadImageModel uploadedImage, EventInsertDTO dto)
         {
             return new Event(
-                establishmentId,
+                establishment.Id,
                 dto.StartDate,
                 dto.EndDate,
                 dto.Name,
@@ -280,7 +285,8 @@ namespace Clubee.API.Services
                             dto.Location.Latitude
                         )
                     )
-                    : null,
+                    : establishment.Location,
+                dto.Location == null,
                 dto.Genres
             );
         }
