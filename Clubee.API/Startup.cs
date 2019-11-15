@@ -24,6 +24,9 @@ namespace Clubee.API
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            // Enable application telemetry.
+            services.AddApplicationInsightsTelemetry();
+
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
 
             // Routing settings.
@@ -50,6 +53,8 @@ namespace Clubee.API
 
             // Enble reponse compression services.
             services.AddResponseCompression();
+
+            services.AddHealthChecks();
 
             services.InitializeCollectionsIndexes();
         }
@@ -90,6 +95,9 @@ namespace Clubee.API
                 options.AllowAnyHeader();
                 options.AllowCredentials();
             });
+
+            // Health checks support.
+            app.UseHealthChecks("/status");
 
             app.UseHttpsRedirection();
             app.UseMvc();

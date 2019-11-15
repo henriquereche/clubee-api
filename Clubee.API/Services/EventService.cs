@@ -1,11 +1,14 @@
 ﻿using Clubee.API.Contracts.Enums;
 using Clubee.API.Contracts.Exceptions;
+using Clubee.API.Contracts.Extensions;
 using Clubee.API.Contracts.Infrastructure.Data;
+using Clubee.API.Contracts.Infrastructure.Telemetry;
 using Clubee.API.Contracts.Services;
 using Clubee.API.Entities;
 using Clubee.API.Models.Base;
 using Clubee.API.Models.Event;
 using Clubee.API.Models.Filters;
+using Microsoft.ApplicationInsights;
 using MongoDB.Bson;
 using MongoDB.Driver;
 using MongoDB.Driver.GeoJsonObjectModel;
@@ -21,14 +24,17 @@ namespace Clubee.API.Services
 
         private readonly IMongoRepository MongoRepository;
         private readonly IImageService ImageService;
+        private readonly TelemetryClient TelemetryClient;
 
         public EventService(
             IMongoRepository mongoRepository,
-            IImageService imageService
+            IImageService imageService,
+            TelemetryClient telemetryClient
             )
         {
             this.MongoRepository = mongoRepository;
             this.ImageService = imageService;
+            this.TelemetryClient = telemetryClient;
         }
 
         /// <summary>
@@ -49,6 +55,11 @@ namespace Clubee.API.Services
                     "Establishment"
                 ).Unwind("Establishment")
                 .FirstOrDefault();
+
+            this.TelemetryClient.TrackEvent(
+                EventNames.EventFind,
+                new { id }
+            );
 
             if (document == null)
                 return null;
@@ -107,19 +118,46 @@ namespace Clubee.API.Services
                 eventAggregateFluent = eventAggregateFluent.AppendStage(
                     (PipelineStageDefinition<Event, Event>)new BsonDocument { { "$geoNear", geoNearOptions } }
                 );
+
+                this.TelemetryClient.TrackEvent(
+                    EventNames.EventListLocation,
+                    new { filter.Latitude, filter.Longitude }
+                );
             }
 
             if (!string.IsNullOrEmpty(filter.EstablishmentId))
+            {
                 eventAggregateFluent = eventAggregateFluent.Match(document => document.EstablishmentId == new ObjectId(filter.EstablishmentId));
 
+                this.TelemetryClient.TrackEvent(
+                    EventNames.EventListEstablishment,
+                    new { filter.EstablishmentId }
+                );
+            }
+
             if (filter.Genre.HasValue)
+            {
                 eventAggregateFluent = eventAggregateFluent.Match(document => document.Genres.Contains(filter.Genre.Value));
 
+                this.TelemetryClient.TrackEvent(
+                    EventNames.EventListGenre,
+                    new { filter.Genre }
+                );
+            }
+
             if (!string.IsNullOrEmpty(filter.Query))
+            {
                 eventAggregateFluent = eventAggregateFluent.Match(
                     document => document.Name.Contains(filter.Query)
                         || document.Description.Contains(filter.Query)
                 );
+
+                this.TelemetryClient.TrackEvent(
+                    EventNames.EventListQuery,
+                    new { filter.Query }
+                );
+            }
+                
 
             IAggregateFluent<BsonDocument> aggregateFluent = eventAggregateFluent.Lookup(
                 nameof(Establishment),

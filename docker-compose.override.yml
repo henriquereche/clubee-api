@@ -9,6 +9,8 @@ services:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://+:80
 
+      - APPINSIGHTS_INSTRUMENTATIONKEY=development
+
       - JwtSettings__SecretKey=8BaypBYxaxT7DptQrxcR993AVG9f8Fz5msVqQUAKkGZ3EpxXvwpv8czak4XQ
       - JwtSettings__ExpirationSeconds=172800
 

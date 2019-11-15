@@ -1,11 +1,14 @@
 ﻿using Clubee.API.Contracts.Enums;
+using Clubee.API.Contracts.Extensions;
 using Clubee.API.Contracts.Infrastructure.Data;
+using Clubee.API.Contracts.Infrastructure.Telemetry;
 using Clubee.API.Contracts.Services;
 using Clubee.API.Entities;
 using Clubee.API.Models.Base;
 using Clubee.API.Models.Establishment;
 using Clubee.API.Models.Filters;
 using Clubee.API.Models.Register;
+using Microsoft.ApplicationInsights;
 using MongoDB.Bson;
 using MongoDB.Driver;
 using MongoDB.Driver.GeoJsonObjectModel;
@@ -21,11 +24,16 @@ namespace Clubee.API.Services
 
         private readonly IMongoRepository MongoRepository;
         private readonly IImageService ImageService;
+        private readonly TelemetryClient TelemetryClient;
 
-        public EstablishmentService(IMongoRepository mongoRepository, IImageService imageService)
+        public EstablishmentService(
+            IMongoRepository mongoRepository, 
+            IImageService imageService,
+            TelemetryClient telemetryClient)
         {
             this.MongoRepository = mongoRepository;
             this.ImageService = imageService;
+            this.TelemetryClient = telemetryClient;
         }
 
         /// <summary>
@@ -72,17 +80,36 @@ namespace Clubee.API.Services
                 establishmentAggregateFluent = establishmentAggregateFluent.AppendStage(
                     (PipelineStageDefinition<Establishment, Establishment>)new BsonDocument { { "$geoNear", geoNearOptions } }
                 );
+
+                this.TelemetryClient.TrackEvent(
+                    EventNames.EstablishmentListLocation,
+                    new { filter.Latitude, filter.Longitude }
+                );
             }
 
             if (filter.EstablishmentType.HasValue)
+            {
                 establishmentAggregateFluent = establishmentAggregateFluent
                     .Match(document => document.EstablishmentTypes.Contains(filter.EstablishmentType.Value));
 
+                this.TelemetryClient.TrackEvent(
+                    EventNames.EstablishmentListType,
+                    new { filter.EstablishmentType }
+                );
+            }
+
             if (!string.IsNullOrEmpty(filter.Query))
+            {
                 establishmentAggregateFluent = establishmentAggregateFluent.Match(
                     document => document.Name.Contains(filter.Query)
                         || document.Description.Contains(filter.Query)
                 );
+
+                this.TelemetryClient.TrackEvent(
+                    EventNames.EstablishmentListQuery,
+                    new { filter.Query }
+                );
+            }
 
             IEnumerable<BsonDocument> documents = establishmentAggregateFluent
                 .Skip((filter.Page - 1) * filter.PageSize)
@@ -115,6 +142,11 @@ namespace Clubee.API.Services
 
             if (establishment == null)
                 return null;
+
+            this.TelemetryClient.TrackEvent(
+                EventNames.EstablishmentFind,
+                new { id }
+            );
 
             return new EstablishmentFindDTO
             {
