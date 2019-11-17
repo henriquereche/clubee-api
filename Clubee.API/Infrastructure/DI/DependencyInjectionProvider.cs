@@ -27,6 +27,12 @@ namespace Clubee.API.Infrastructure.DI
             services.AddScoped<IRegisterService, RegisterService>();
             services.AddScoped<IEventService, EventService>();
             services.AddScoped<IEstablishmentService, EstablishmentService>();
+            services.AddScoped<IRelevanceService, RelevanceService>();
+
+            RelevanceEmitter.Initialize(
+                services.BuildServiceProvider()
+                    .GetService<IMongoRepository>()
+            );
         }
     }
 }

@@ -10,8 +10,12 @@ namespace Clubee.API.Models.Filters
         public double? Latitude { get; set; }
         public double? Meters { get; set; }
         public GenreEnum? Genre { get; set; }
+        public OrderTypeEnum? OrderType { get; set; }
 
         internal bool GeospatialQuery => 
             this.Longitude.HasValue && this.Latitude.HasValue;
+
+        public override string ToString()
+            => $"establishmentId={EstablishmentId},query={this.Query},longitude={this.Longitude},latitude={this.Latitude},meters={this.Meters},genre={this.Genre}";
     }
 }

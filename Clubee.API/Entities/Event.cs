@@ -13,6 +13,7 @@ namespace Clubee.API.Entities
     {
         protected Event()
         {
+            this.Relevance = 0;
             this.Genres = new List<GenreEnum>();
         }
 
@@ -57,6 +58,7 @@ namespace Clubee.API.Entities
         public Location Location { get; set; }
         public bool EstablishmentLocation { get; set; }
         public ICollection<GenreEnum> Genres { get; protected set; }
+        public long Relevance { get; protected set; }
 
         /// <summary>
         /// Represent total event duration.

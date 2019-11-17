@@ -27,6 +27,7 @@ namespace Clubee.API
             // Enable application telemetry.
             services.AddApplicationInsightsTelemetry();
 
+            services.AddHttpContextAccessor();
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
 
             // Routing settings.
@@ -43,8 +44,10 @@ namespace Clubee.API
             services.AddSwaggerGen(config =>
             {
                 config.EnableAnnotations();
-                config.SwaggerDoc("v1", new Info { Title = "Clubee API", Version = "v1" });
+                config.DescribeAllEnumsAsStrings();
 
+                config.SwaggerDoc("v1", new Info { Title = "Clubee API", Version = "v1" });
+                
                 config.OperationFilter<AuthorizationOperationFilter>();
             });
 

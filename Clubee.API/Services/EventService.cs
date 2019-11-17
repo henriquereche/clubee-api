@@ -25,16 +25,19 @@ namespace Clubee.API.Services
         private readonly IMongoRepository MongoRepository;
         private readonly IImageService ImageService;
         private readonly TelemetryClient TelemetryClient;
+        private readonly IRelevanceService RelevanceService;
 
         public EventService(
             IMongoRepository mongoRepository,
             IImageService imageService,
-            TelemetryClient telemetryClient
+            TelemetryClient telemetryClient,
+            IRelevanceService relevanceService
             )
         {
             this.MongoRepository = mongoRepository;
             this.ImageService = imageService;
             this.TelemetryClient = telemetryClient;
+            this.RelevanceService = relevanceService;
         }
 
         /// <summary>
@@ -56,10 +59,12 @@ namespace Clubee.API.Services
                 ).Unwind("Establishment")
                 .FirstOrDefault();
 
+            this.RelevanceService.Register<Event>(id);
             this.TelemetryClient.TrackEvent(
                 EventNames.EventFind,
                 new { id }
             );
+
 
             if (document == null)
                 return null;
@@ -157,14 +162,18 @@ namespace Clubee.API.Services
                     new { filter.Query }
                 );
             }
-                
 
+            this.RelevanceService.Register<Event, EventFilter>(filter);
             IAggregateFluent<BsonDocument> aggregateFluent = eventAggregateFluent.Lookup(
                 nameof(Establishment),
                 "EstablishmentId",
                 "_id",
                 "Establishment"
             ).Unwind("Establishment");
+
+            aggregateFluent = filter.OrderType == OrderTypeEnum.Distance 
+                ? aggregateFluent.SortBy(document => document["Location"]["Distance"])
+                : aggregateFluent.SortBy(document => document["Relevance"]);
 
             IEnumerable<BsonDocument> documents = aggregateFluent
                 .Skip((filter.Page - 1) * filter.PageSize)

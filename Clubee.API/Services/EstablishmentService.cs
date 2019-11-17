@@ -25,15 +25,18 @@ namespace Clubee.API.Services
         private readonly IMongoRepository MongoRepository;
         private readonly IImageService ImageService;
         private readonly TelemetryClient TelemetryClient;
+        private readonly IRelevanceService RelevanceService;
 
         public EstablishmentService(
             IMongoRepository mongoRepository, 
             IImageService imageService,
-            TelemetryClient telemetryClient)
+            TelemetryClient telemetryClient, 
+            IRelevanceService relevanceService)
         {
             this.MongoRepository = mongoRepository;
             this.ImageService = imageService;
             this.TelemetryClient = telemetryClient;
+            this.RelevanceService = relevanceService;
         }
 
         /// <summary>
@@ -111,10 +114,16 @@ namespace Clubee.API.Services
                 );
             }
 
-            IEnumerable<BsonDocument> documents = establishmentAggregateFluent
+            IAggregateFluent<BsonDocument> aggregateFluent = establishmentAggregateFluent.As<BsonDocument>();
+
+            aggregateFluent = filter.OrderType == OrderTypeEnum.Distance
+                ? aggregateFluent.SortBy(document => document["Location"]["Distance"])
+                : aggregateFluent.SortBy(document => document["Relevance"]);
+
+            this.RelevanceService.Register<Establishment, EstablishmentFilter>(filter);
+            IEnumerable<BsonDocument> documents = aggregateFluent
                 .Skip((filter.Page - 1) * filter.PageSize)
                 .Limit(filter.PageSize)
-                .As<BsonDocument>()
                 .ToList();
 
             return documents.Select(document => 
@@ -143,6 +152,7 @@ namespace Clubee.API.Services
             if (establishment == null)
                 return null;
 
+            this.RelevanceService.Register<Establishment>(id);
             this.TelemetryClient.TrackEvent(
                 EventNames.EstablishmentFind,
                 new { id }

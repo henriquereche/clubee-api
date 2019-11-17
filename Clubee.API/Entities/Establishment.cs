@@ -13,6 +13,7 @@ namespace Clubee.API.Entities
     {
         protected Establishment()
         {
+            this.Relevance = 0;
             this.Availabilities = new List<Availability>();
             this.EstablishmentTypes = new List<EstablishmentTypeEnum>();
         }
@@ -51,6 +52,7 @@ namespace Clubee.API.Entities
         public Location Location {get; set;}
         public ICollection<EstablishmentTypeEnum> EstablishmentTypes { get; protected set; }
         public ICollection<Availability> Availabilities { get; protected set; }
+        public long Relevance { get; protected set; }
 
         /// <summary>
         /// Add a new availability to establishment.
