@@ -67,6 +67,9 @@ namespace Clubee.API.Services
 
             if (filter.GeospatialQuery)
             {
+                if (!filter.Meters.HasValue)
+                    filter.Meters = 10000;
+
                 BsonDocument geoNearOptions = new BsonDocument {
                     {
                         "near", new BsonDocument {
@@ -74,7 +77,7 @@ namespace Clubee.API.Services
                             { "coordinates", new BsonArray { filter.Longitude.Value, filter.Latitude.Value } },
                         }
                     },
-                    { "maxDistance", filter.Meters ?? 10000 },
+                    { "maxDistance", filter.Meters },
                     { "includeLocs", "Location.Coordinates" },
                     { "distanceField", "Location.Distance" },
                     { "spherical" , true }
@@ -118,7 +121,7 @@ namespace Clubee.API.Services
 
             aggregateFluent = filter.OrderType == OrderTypeEnum.Distance
                 ? aggregateFluent.SortBy(document => document["Location"]["Distance"])
-                : aggregateFluent.SortBy(document => document["Relevance"]);
+                : aggregateFluent.SortByDescending(document => document["Relevance"]);
 
             this.RelevanceService.Register<Establishment, EstablishmentFilter>(filter);
             IEnumerable<BsonDocument> documents = aggregateFluent

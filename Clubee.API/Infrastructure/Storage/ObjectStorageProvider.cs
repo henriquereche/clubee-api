@@ -1,7 +1,6 @@
 ﻿using Clubee.API.Contracts.Infrastructure.Storage;
 using Microsoft.Azure.Storage;
 using Microsoft.Azure.Storage.Blob;
-using System;
 using System.Threading.Tasks;
 
 namespace Clubee.API.Infrastructure.Storage
@@ -38,7 +37,8 @@ namespace Clubee.API.Infrastructure.Storage
         private async Task<CloudBlockBlob> GetObject(string container, string objectName)
         {
             CloudBlobContainer blobContainer = this.Client.GetContainerReference(container);
-            await blobContainer.CreateIfNotExistsAsync();
+            await blobContainer.CreateIfNotExistsAsync(
+                BlobContainerPublicAccessType.Blob, null, null);
 
             return blobContainer.GetBlockBlobReference(objectName);
         }

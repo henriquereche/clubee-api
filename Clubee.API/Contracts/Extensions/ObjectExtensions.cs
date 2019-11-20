@@ -19,10 +19,17 @@ namespace Clubee.API.Contracts.Extensions
             foreach (PropertyInfo property in propertiesDescriptor)
             {
                 object propertyValue = property.GetValue(value);
-                string propertyName = camelCaseConvention ? property.Name.ToCamelCase() : property.Name;
+                string propertyName = camelCaseConvention 
+                    ? property.Name.ToCamelCase() 
+                    : property.Name;
 
                 if (propertyValue != null)
+                {
+                    if (propertyValue.GetType().IsEnum)
+                        propertyValue = (int)propertyValue;
+
                     dictionary[propertyName] = propertyValue.ToString();
+                }
             }
 
             return dictionary;

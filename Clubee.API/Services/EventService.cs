@@ -107,6 +107,9 @@ namespace Clubee.API.Services
 
             if (filter.GeospatialQuery)
             {
+                if (!filter.Meters.HasValue)
+                    filter.Meters = 10000;
+
                 BsonDocument geoNearOptions = new BsonDocument {
                     {
                         "near", new BsonDocument {
@@ -114,7 +117,7 @@ namespace Clubee.API.Services
                             { "coordinates", new BsonArray { filter.Longitude.Value, filter.Latitude.Value } },
                         }
                     },
-                    { "maxDistance", filter.Meters ?? 10000 },
+                    { "maxDistance", filter.Meters },
                     { "includeLocs", "Location.Coordinates" },
                     { "distanceField", "Location.Distance" },
                     { "spherical" , true }
@@ -173,7 +176,7 @@ namespace Clubee.API.Services
 
             aggregateFluent = filter.OrderType == OrderTypeEnum.Distance 
                 ? aggregateFluent.SortBy(document => document["Location"]["Distance"])
-                : aggregateFluent.SortBy(document => document["Relevance"]);
+                : aggregateFluent.SortByDescending(document => document["Relevance"]);
 
             IEnumerable<BsonDocument> documents = aggregateFluent
                 .Skip((filter.Page - 1) * filter.PageSize)
@@ -211,12 +214,14 @@ namespace Clubee.API.Services
         /// <returns></returns>
         public async Task<EventFindDTO> Insert(ObjectId establishmentId, EventInsertDTO dto)
         {
-            UploadImageModel uploadedImage = await this.ImageService.UploadImage(EventService.EventsContainer, dto.Image);
+            UploadImageModel uploadedImage = await this.ImageService.UploadImage(
+                EventService.EventsContainer, dto.Image);
+
             Establishment establishment = this.MongoRepository.FindById<Establishment>(establishmentId);
 
             Event eventEntity = this.CreateEvent(establishment, uploadedImage, dto);
-
             this.MongoRepository.Insert(eventEntity);
+
             return this.Find(eventEntity.Id);
         }
 
