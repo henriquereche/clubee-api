@@ -1,4 +1,4 @@
-﻿namespace Clubee.API.Models.Filters
+﻿namespace Clubee.API.Models.Filters.Base
 {
     public class BaseFilter
     {

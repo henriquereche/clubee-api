@@ -2,7 +2,7 @@
 using Clubee.API.Contracts.Extensions;
 using Clubee.API.Contracts.Services;
 using Clubee.API.Entities;
-using Clubee.API.Models.Filters;
+using Clubee.API.Models.Filters.Base;
 using Microsoft.AspNetCore.Http;
 using MongoDB.Bson;
 using System.Collections.Generic;

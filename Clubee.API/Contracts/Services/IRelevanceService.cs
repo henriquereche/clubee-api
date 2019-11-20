@@ -1,5 +1,5 @@
 ﻿using Clubee.API.Contracts.Entities;
-using Clubee.API.Models.Filters;
+using Clubee.API.Models.Filters.Base;
 using MongoDB.Bson;
 
 namespace Clubee.API.Contracts.Services

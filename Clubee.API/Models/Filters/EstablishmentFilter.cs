@@ -1,20 +1,23 @@
 ﻿using Clubee.API.Contracts.Enums;
+using Clubee.API.Models.Filters.Base;
 
 namespace Clubee.API.Models.Filters
 {
-    public class EstablishmentFilter : BaseFilter
+    public class EstablishmentFilter : GeospatialBaseFilter
     {
         public string Query { get; set; }
-        public double? Longitude { get; set; }
-        public double? Latitude { get; set; }
-        public double? Meters { get; set; }
         public EstablishmentTypeEnum? EstablishmentType { get; set; }
         public OrderTypeEnum? OrderType { get; set; }
 
-        internal bool GeospatialQuery =>
-            this.Longitude.HasValue && this.Latitude.HasValue;
-
-        public override string ToString() 
-            => $"query={this.Query},longitude={this.Longitude},latitude={this.Latitude},meters={this.Meters},establishmentType={this.EstablishmentType}";
+        /// <summary>
+        /// Filter string representation.
+        /// </summary>
+        /// <returns></returns>
+        public override string ToString()
+        {
+            return $"query={this.Query},longitude={this.Longitude}," +
+                $"latitude={this.Latitude},meters={this.Meters}," +
+                $"establishmentType={this.EstablishmentType}";
+        }
     }
 }
