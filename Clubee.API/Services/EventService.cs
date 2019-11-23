@@ -1,6 +1,7 @@
 ﻿using Clubee.API.Contracts.Enums;
 using Clubee.API.Contracts.Exceptions;
 using Clubee.API.Contracts.Extensions;
+using Clubee.API.Contracts.Infrastructure.Authorization;
 using Clubee.API.Contracts.Infrastructure.Data;
 using Clubee.API.Contracts.Infrastructure.Telemetry;
 using Clubee.API.Contracts.Services;
@@ -26,18 +27,21 @@ namespace Clubee.API.Services
         private readonly IImageService ImageService;
         private readonly TelemetryClient TelemetryClient;
         private readonly IRelevanceService RelevanceService;
+        private readonly IUserContext UserContext;
 
         public EventService(
             IMongoRepository mongoRepository,
             IImageService imageService,
             TelemetryClient telemetryClient,
-            IRelevanceService relevanceService
+            IRelevanceService relevanceService,
+            IUserContext userContext
             )
         {
             this.MongoRepository = mongoRepository;
             this.ImageService = imageService;
             this.TelemetryClient = telemetryClient;
             this.RelevanceService = relevanceService;
+            this.UserContext = userContext;
         }
 
         /// <summary>
@@ -59,7 +63,9 @@ namespace Clubee.API.Services
                 ).Unwind("Establishment")
                 .FirstOrDefault();
 
-            this.RelevanceService.Register<Event>(id);
+            if (!this.UserContext.EstablishmentId.HasValue)
+                this.RelevanceService.Register<Event>(id);
+
             this.TelemetryClient.TrackEvent(
                 EventNames.EventFind,
                 new { id }
@@ -166,7 +172,9 @@ namespace Clubee.API.Services
                 );
             }
 
-            this.RelevanceService.Register<Event, EventFilter>(filter);
+            if (!this.UserContext.EstablishmentId.HasValue)
+                this.RelevanceService.Register<Event, EventFilter>(filter);
+
             IAggregateFluent<BsonDocument> aggregateFluent = eventAggregateFluent.Lookup(
                 nameof(Establishment),
                 "EstablishmentId",

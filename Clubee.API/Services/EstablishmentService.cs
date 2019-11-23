@@ -1,5 +1,6 @@
 ﻿using Clubee.API.Contracts.Enums;
 using Clubee.API.Contracts.Extensions;
+using Clubee.API.Contracts.Infrastructure.Authorization;
 using Clubee.API.Contracts.Infrastructure.Data;
 using Clubee.API.Contracts.Infrastructure.Telemetry;
 using Clubee.API.Contracts.Services;
@@ -26,17 +27,21 @@ namespace Clubee.API.Services
         private readonly IImageService ImageService;
         private readonly TelemetryClient TelemetryClient;
         private readonly IRelevanceService RelevanceService;
+        private readonly IUserContext UserContext;
 
         public EstablishmentService(
             IMongoRepository mongoRepository, 
             IImageService imageService,
             TelemetryClient telemetryClient, 
-            IRelevanceService relevanceService)
+            IRelevanceService relevanceService,
+            IUserContext userContext
+            )
         {
             this.MongoRepository = mongoRepository;
             this.ImageService = imageService;
             this.TelemetryClient = telemetryClient;
             this.RelevanceService = relevanceService;
+            this.UserContext = userContext;
         }
 
         /// <summary>
@@ -123,7 +128,9 @@ namespace Clubee.API.Services
                 ? aggregateFluent.SortBy(document => document["Location"]["Distance"])
                 : aggregateFluent.SortByDescending(document => document["Relevance"]);
 
-            this.RelevanceService.Register<Establishment, EstablishmentFilter>(filter);
+            if (!this.UserContext.EstablishmentId.HasValue)
+                this.RelevanceService.Register<Establishment, EstablishmentFilter>(filter);
+
             IEnumerable<BsonDocument> documents = aggregateFluent
                 .Skip((filter.Page - 1) * filter.PageSize)
                 .Limit(filter.PageSize)
@@ -155,7 +162,9 @@ namespace Clubee.API.Services
             if (establishment == null)
                 return null;
 
-            this.RelevanceService.Register<Establishment>(id);
+            if (!this.UserContext.EstablishmentId.HasValue)
+                this.RelevanceService.Register<Establishment>(id);
+
             this.TelemetryClient.TrackEvent(
                 EventNames.EstablishmentFind,
                 new { id }

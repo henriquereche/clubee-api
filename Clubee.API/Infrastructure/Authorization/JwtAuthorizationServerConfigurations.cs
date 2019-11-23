@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+﻿using Clubee.API.Contracts.Infrastructure.Authorization;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
@@ -15,6 +16,7 @@ namespace Clubee.API.Infrastructure.Authorization
         {
             services.AddSingleton<JwtAuthorizationSettings>();
             services.AddSingleton<JwtAuthorizationTokenWriter>();
+            services.AddScoped<IUserContext, UserContext>();
 
             JwtAuthorizationSettings jwtAuthorizationSettings = services.BuildServiceProvider()
                 .GetService<JwtAuthorizationSettings>();

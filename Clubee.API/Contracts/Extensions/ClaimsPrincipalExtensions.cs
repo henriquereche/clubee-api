@@ -29,5 +29,21 @@ namespace Clubee.API.Contracts.Extensions
         /// <returns></returns>
         public static ObjectId GetEstablishmentId(this ClaimsPrincipal user) 
             => new ObjectId(user.FindFirst(ClaimsDefaults.EstablishmentId).Value);
+
+        /// <summary>
+        /// Get user establishmentName.
+        /// </summary>
+        /// <param name="user"></param>
+        /// <returns></returns>
+        public static string GetEstablishmentName(this ClaimsPrincipal user)
+            => user.FindFirst(ClaimsDefaults.EstablishmentName).Value;
+
+        /// <summary>
+        /// Get user imageThumbnail.
+        /// </summary>
+        /// <param name="user"></param>
+        /// <returns></returns>
+        public static string GetUserImageThumbnail(this ClaimsPrincipal user)
+            => user.FindFirst(ClaimsDefaults.ImageThumbnail).Value;
     }
 }
