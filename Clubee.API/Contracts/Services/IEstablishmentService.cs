@@ -1,9 +1,9 @@
 ﻿using Clubee.API.Entities;
+using Clubee.API.Models.Base;
 using Clubee.API.Models.Establishment;
 using Clubee.API.Models.Filters;
 using Clubee.API.Models.Register;
 using MongoDB.Bson;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace Clubee.API.Contracts.Services
@@ -15,7 +15,7 @@ namespace Clubee.API.Contracts.Services
         /// </summary>
         /// <param name="filter"></param>
         /// <returns></returns>
-        IEnumerable<EstablishmentListDTO> List(EstablishmentFilter filter);
+        ListResult<EstablishmentListDTO> List(EstablishmentFilter filter);
 
         /// <summary>
         /// Inserts a new establishment.

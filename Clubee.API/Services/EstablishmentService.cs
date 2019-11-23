@@ -65,7 +65,7 @@ namespace Clubee.API.Services
         /// </summary>
         /// <param name="filter"></param>
         /// <returns></returns>
-        public IEnumerable<EstablishmentListDTO> List(EstablishmentFilter filter)
+        public ListResult<EstablishmentListDTO> List(EstablishmentFilter filter)
         {
             IAggregateFluent<Establishment> establishmentAggregateFluent = this.MongoRepository
                 .GetCollection<Establishment>().Aggregate();
@@ -136,7 +136,7 @@ namespace Clubee.API.Services
                 .Limit(filter.PageSize)
                 .ToList();
 
-            return documents.Select(document => 
+            IEnumerable<EstablishmentListDTO> establishments = documents.Select(document => 
                 new EstablishmentListDTO
                 {
                     Id = document["_id"].AsObjectId,
@@ -148,6 +148,12 @@ namespace Clubee.API.Services
                         : (double?)null
                 }
             ).ToList();
+
+            return new ListResult<EstablishmentListDTO>(
+                establishments, 
+                aggregateFluent.Count().FirstOrDefault().Count, 
+                filter
+            );
         }
 
         /// <summary>

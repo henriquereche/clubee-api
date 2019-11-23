@@ -1,7 +1,7 @@
-﻿using Clubee.API.Models.Event;
+﻿using Clubee.API.Models.Base;
+using Clubee.API.Models.Event;
 using Clubee.API.Models.Filters;
 using MongoDB.Bson;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace Clubee.API.Contracts.Services
@@ -19,7 +19,7 @@ namespace Clubee.API.Contracts.Services
         /// Return event list.
         /// </summary>
         /// <returns></returns>
-        IEnumerable<EventListDTO> List(EventFilter filter);
+        ListResult<EventListDTO> List(EventFilter filter);
 
         /// <summary>
         /// Inserts a new Event.

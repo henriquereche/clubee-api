@@ -1,12 +1,12 @@
 ﻿using Clubee.API.Contracts.Extensions;
 using Clubee.API.Contracts.Services;
+using Clubee.API.Models.Base;
 using Clubee.API.Models.Event;
 using Clubee.API.Models.Filters;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MongoDB.Bson;
 using Swashbuckle.AspNetCore.Annotations;
-using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
 
@@ -24,7 +24,7 @@ namespace Clubee.API.Controllers
 
         [HttpGet]
         [SwaggerOperation("List existing events.")]
-        [SwaggerResponse((int)HttpStatusCode.OK, type: typeof(IEnumerable<EventListDTO>))]
+        [SwaggerResponse((int)HttpStatusCode.OK, type: typeof(ListResult<EventListDTO>))]
         public IActionResult Get([FromQuery] EventFilter filter)
         {
             return Ok(this.EventService.List(filter));

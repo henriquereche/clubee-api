@@ -1,12 +1,12 @@
 ﻿using Clubee.API.Contracts.Extensions;
 using Clubee.API.Contracts.Services;
+using Clubee.API.Models.Base;
 using Clubee.API.Models.Establishment;
 using Clubee.API.Models.Filters;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MongoDB.Bson;
 using Swashbuckle.AspNetCore.Annotations;
-using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
 
@@ -24,7 +24,7 @@ namespace Clubee.API.Controllers
 
         [HttpGet]
         [SwaggerOperation("List existing establishments.")]
-        [SwaggerResponse((int)HttpStatusCode.OK, type: typeof(IEnumerable<EstablishmentListDTO>))]
+        [SwaggerResponse((int)HttpStatusCode.OK, type: typeof(ListResult<EstablishmentListDTO>))]
         public IActionResult Get([FromQuery]EstablishmentFilter filter)
         {
             return Ok(this.EstablishmentService.List(filter));

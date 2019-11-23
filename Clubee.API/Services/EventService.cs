@@ -71,7 +71,6 @@ namespace Clubee.API.Services
                 new { id }
             );
 
-
             if (document == null)
                 return null;
 
@@ -107,7 +106,7 @@ namespace Clubee.API.Services
         /// Return event list.
         /// </summary>
         /// <returns></returns>
-        public IEnumerable<EventListDTO> List(EventFilter filter)
+        public ListResult<EventListDTO> List(EventFilter filter)
         {
             IAggregateFluent<Event> eventAggregateFluent = this.MongoRepository.GetCollection<Event>().Aggregate();
 
@@ -191,7 +190,7 @@ namespace Clubee.API.Services
                 .Limit(filter.PageSize)
                 .ToList();
 
-            return documents.Select(document =>
+            IEnumerable<EventListDTO> events = documents.Select(document =>
                 new EventListDTO
                 {
                     Id = document["_id"].AsObjectId,
@@ -211,8 +210,13 @@ namespace Clubee.API.Services
                     }
                 }
             ).ToList();
-        }
 
+            return new ListResult<EventListDTO>(
+                events,
+                aggregateFluent.Count().FirstOrDefault().Count,
+                filter
+            );
+        }
 
         /// <summary>
         /// Inserts a new Event.
