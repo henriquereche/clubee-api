@@ -1,5 +1,6 @@
 ﻿using Clubee.API.Contracts.Enums;
 using Clubee.API.Models.Filters.Base;
+using System;
 
 namespace Clubee.API.Models.Filters
 {
@@ -9,6 +10,13 @@ namespace Clubee.API.Models.Filters
         public string Query { get; set; }
         public GenreEnum? Genre { get; set; }
         public OrderTypeEnum? OrderType { get; set; }
+        public DateTime? StartDate { get; set; }
+        public DateTime? EndDate { get; set; }
+
+        /// <summary>
+        /// Determines if filter should apply date range filter.
+        /// </summary>
+        internal bool DateFilter => this.StartDate.HasValue && this.EndDate.HasValue;
 
         /// <summary>
         /// Filter string representation.
@@ -18,7 +26,8 @@ namespace Clubee.API.Models.Filters
         { 
             return $"establishmentId={EstablishmentId},query={this.Query}," +
                 $"longitude={this.Longitude},latitude={this.Latitude}," +
-                $"meters={this.Meters},genre={this.Genre}";
+                $"meters={this.Meters},genre={this.Genre},startDate={this.StartDate}," +
+                $"endDate={this.EndDate}";
         }
     }
 }

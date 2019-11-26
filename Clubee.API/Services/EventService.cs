@@ -140,7 +140,8 @@ namespace Clubee.API.Services
 
             if (!string.IsNullOrEmpty(filter.EstablishmentId))
             {
-                eventAggregateFluent = eventAggregateFluent.Match(document => document.EstablishmentId == new ObjectId(filter.EstablishmentId));
+                eventAggregateFluent = eventAggregateFluent.Match(
+                    document => document.EstablishmentId == new ObjectId(filter.EstablishmentId));
 
                 this.TelemetryClient.TrackEvent(
                     EventNames.EventListEstablishment,
@@ -150,7 +151,8 @@ namespace Clubee.API.Services
 
             if (filter.Genre.HasValue)
             {
-                eventAggregateFluent = eventAggregateFluent.Match(document => document.Genres.Contains(filter.Genre.Value));
+                eventAggregateFluent = eventAggregateFluent.Match(
+                    document => document.Genres.Contains(filter.Genre.Value));
 
                 this.TelemetryClient.TrackEvent(
                     EventNames.EventListGenre,
@@ -168,6 +170,20 @@ namespace Clubee.API.Services
                 this.TelemetryClient.TrackEvent(
                     EventNames.EventListQuery,
                     new { filter.Query }
+                );
+            }
+
+            if (filter.DateFilter)
+            {
+                eventAggregateFluent = eventAggregateFluent.Match(document => (
+                    (document.EndDate >= filter.StartDate && document.StartDate <= filter.StartDate)
+                    || (document.StartDate <= filter.EndDate && document.EndDate >= filter.EndDate)
+                    || (document.StartDate >= filter.StartDate && document.EndDate <= filter.EndDate)
+                ));
+
+                this.TelemetryClient.TrackEvent(
+                    EventNames.EventListDate,
+                    new { filter.StartDate, filter.EndDate }
                 );
             }
 

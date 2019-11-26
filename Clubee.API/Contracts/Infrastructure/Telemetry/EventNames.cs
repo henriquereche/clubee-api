@@ -2,6 +2,8 @@
 {
     public sealed class EventNames
     {
+        #region Events
+
         /// <summary>
         /// Specific event search.
         /// </summary>
@@ -21,6 +23,15 @@
         /// Query based events search.
         /// </summary>
         public const string EventListQuery = "EVENT-LIST-QUERY";
+
+        /// <summary>
+        /// Date based events search.
+        /// </summary>
+        public const string EventListDate = "EVENT-LIST-DATE";
+
+        #endregion
+
+        #region Establishments
 
         /// <summary>
         /// Establishment based events search.
@@ -45,6 +56,8 @@
         /// <summary>
         /// Query based establishments search.
         /// </summary>
-        public const string EstablishmentListQuery = "ESTABLISHMENT-LIST-QUERY";
+        public const string EstablishmentListQuery = "ESTABLISHMENT-LIST-QUERY"; 
+
+        #endregion
     }
 }
