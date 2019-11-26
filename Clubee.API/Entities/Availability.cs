@@ -12,13 +12,33 @@ namespace Clubee.API.Entities
             )
         {
             this.DayOfWeek = dayOfWeek;
-            this.OpenTime = openTime;
-            this.CloseTime = closeTime;
+            this.SetTime(openTime, closeTime);
         }
 
         public DayOfWeekEnum DayOfWeek { get; set; }
-        public TimeSpan OpenTime { get; set; }
-        public TimeSpan CloseTime { get; set; }
+        public TimeSpan OpenTime { get; protected set; }
+        public TimeSpan CloseTime { get; protected set; }
+        public DayOfWeekEnum? CloseDayOfWeek { get; protected set; }
+
+        /// <summary>
+        /// Defines availability open and close time.
+        /// </summary>
+        /// <param name="openTime"></param>
+        /// <param name="closeTime"></param>
+        public void SetTime(TimeSpan openTime, TimeSpan closeTime)
+        {
+            this.OpenTime = openTime;
+            this.CloseTime = closeTime;
+
+            if (this.CloseTime < this.OpenTime)
+            {
+                int dayOfWeek = (int)this.DayOfWeek + 1;
+
+                this.CloseDayOfWeek = dayOfWeek > 7
+                    ? DayOfWeekEnum.Sunday
+                    : (DayOfWeekEnum)dayOfWeek;
+            }
+        }
 
         /// <summary>
         /// Represents available duration.

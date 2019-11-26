@@ -229,7 +229,7 @@ namespace Clubee.API.Services
 
             return new ListResult<EventListDTO>(
                 events,
-                aggregateFluent.Count().FirstOrDefault().Count,
+                aggregateFluent.Count().FirstOrDefault()?.Count ?? 0,
                 filter
             );
         }

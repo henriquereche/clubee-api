@@ -16,7 +16,9 @@ namespace Clubee.API.Models.Filters
         /// <summary>
         /// Determines if filter should apply date range filter.
         /// </summary>
-        internal bool DateFilter => this.StartDate.HasValue && this.EndDate.HasValue;
+        internal bool DateFilter => this.StartDate.HasValue 
+            && this.EndDate.HasValue 
+            && (this.EndDate.Value > this.StartDate.Value);
 
         /// <summary>
         /// Filter string representation.

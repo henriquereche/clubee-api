@@ -56,7 +56,12 @@
         /// <summary>
         /// Query based establishments search.
         /// </summary>
-        public const string EstablishmentListQuery = "ESTABLISHMENT-LIST-QUERY"; 
+        public const string EstablishmentListQuery = "ESTABLISHMENT-LIST-QUERY";
+
+        /// <summary>
+        /// Days of week based establishments search.
+        /// </summary>
+        public const string EstablishmentListDaysOfWeek = "ESTABLISHMENT-LIST-DAYS-WEEK"; 
 
         #endregion
     }

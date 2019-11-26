@@ -9,12 +9,15 @@ using Clubee.API.Models.Base;
 using Clubee.API.Models.Establishment;
 using Clubee.API.Models.Filters;
 using Clubee.API.Models.Register;
+using LinqKit;
 using Microsoft.ApplicationInsights;
 using MongoDB.Bson;
 using MongoDB.Driver;
 using MongoDB.Driver.GeoJsonObjectModel;
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 
 namespace Clubee.API.Services
@@ -122,6 +125,25 @@ namespace Clubee.API.Services
                 );
             }
 
+            if (filter.DaysOfWeekEnum != null)
+            {
+                Expression<Func<Establishment, bool>> availabilityExpression = document => false;
+
+                foreach (DayOfWeekEnum dayOfWeek in filter.DaysOfWeekEnum)
+                    availabilityExpression = availabilityExpression.Or(
+                        document => document.Availabilities.Any(
+                            availability => availability.DayOfWeek == dayOfWeek || availability.CloseDayOfWeek == dayOfWeek
+                        )
+                    );
+
+                establishmentAggregateFluent = establishmentAggregateFluent.Match(availabilityExpression);
+
+                this.TelemetryClient.TrackEvent(
+                    EventNames.EstablishmentListDaysOfWeek,
+                    new { filter.DaysOfWeek }
+                );
+            }
+
             IAggregateFluent<BsonDocument> aggregateFluent = establishmentAggregateFluent.As<BsonDocument>();
 
             aggregateFluent = filter.OrderType == OrderTypeEnum.Distance
@@ -151,7 +173,7 @@ namespace Clubee.API.Services
 
             return new ListResult<EstablishmentListDTO>(
                 establishments, 
-                aggregateFluent.Count().FirstOrDefault().Count, 
+                aggregateFluent.Count().FirstOrDefault()?.Count ?? 0, 
                 filter
             );
         }
